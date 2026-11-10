@@ -3,6 +3,8 @@
   'use strict';
 
   const ROLES = ['Solo', 'Jungle', 'Mid', 'Carry', 'Support'];
+  const ROLE_LABELS = { Solo: 'Solo', Jungle: 'Jungle', Mid: 'Mid', Carry: 'ADC', Support: 'Support' };
+  const PLAN_LIMIT = 10;
   const EPOCH = Date.UTC(2026, 0, 1);
 
   function b64encode(bytes) {
@@ -151,23 +153,63 @@
     return { matched: matched, unknown: unknown, ids: matched.map(m => m.id) };
   }
 
-  function encodePlan(plan, rosterIds) {
-    const index = new Map(rosterIds.map((id, i) => [id, i]));
-    const bytes = [1];
+  function emptyRoles() {
+    const roles = {};
+    ROLES.forEach(function (role) { roles[role] = []; });
+    return roles;
+  }
+  function uniqueIds(list) {
+    const out = [];
+    (list || []).forEach(function (id) {
+      if (id && out.indexOf(id) === -1) out.push(id);
+    });
+    return out;
+  }
+  function normalizePlan(plan, roster) {
+    const source = plan || {};
+    const roles = emptyRoles();
+    const byId = new Map((roster || []).map(function (god) { return [god.id, god]; }));
+    if (source.roles) {
+      ROLES.forEach(function (role) { roles[role] = uniqueIds(source.roles[role]); });
+    } else {
+      uniqueIds(source.picks).forEach(function (id) {
+        const god = byId.get(id);
+        if (god && roles[god.role]) roles[god.role].push(id);
+      });
+    }
+    const comps = (source.comps || []).map(function (comp) {
+      const gods = comp.gods || [];
+      return {
+        name: comp.name || 'Comp',
+        gods: ROLES.map(function (_, i) { return gods[i] || ''; })
+      };
+    });
+    return {
+      id: source.id,
+      name: source.name || 'Plan',
+      roles: roles,
+      bans: uniqueIds(source.bans),
+      comps: comps,
+      picks: ROLES.reduce(function (all, role) { return all.concat(roles[role]); }, [])
+    };
+  }
+  function writePlanBytes(plan, rosterIds, version) {
+    const index = new Map(rosterIds.map(function (id, i) { return [id, i]; }));
+    const bytes = [version];
     const title = nameBytes(plan.name || 'Plan');
     bytes.push(title.length);
     for (let i = 0; i < title.length; i++) bytes.push(title[i]);
     function writeIds(ids) {
-      const list = (ids || []).filter(id => index.has(id)).slice(0, 95);
+      const list = (ids || []).filter(function (id) { return index.has(id); }).slice(0, 95);
       bytes.push(list.length);
-      list.forEach(id => bytes.push(index.get(id)));
-      return list;
+      list.forEach(function (id) { bytes.push(index.get(id)); });
     }
-    writeIds(plan.picks);
+    if (version === 2) ROLES.forEach(function (role) { writeIds(plan.roles && plan.roles[role]); });
+    else writeIds(plan.picks);
     writeIds(plan.bans);
     const comps = (plan.comps || []).slice(0, 12);
     bytes.push(comps.length);
-    comps.forEach(comp => {
+    comps.forEach(function (comp) {
       const utf = nameBytes(comp.name || 'Comp');
       bytes.push(utf.length);
       for (let i = 0; i < utf.length; i++) bytes.push(utf[i]);
@@ -177,16 +219,21 @@
         bytes.push(id && index.has(id) ? index.get(id) : 255);
       }
     });
-    return 'cp1.' + b64encode(bytes);
+    return bytes;
   }
-
+  function encodePlan(plan, rosterIds) {
+    const version = plan && plan.roles ? 2 : 1;
+    return (version === 2 ? 'cp2.' : 'cp1.') + b64encode(writePlanBytes(plan || {}, rosterIds, version));
+  }
   function decodePlan(code, rosterIds) {
-    const raw = String(code || '').trim().replace(/^cp1\./, '');
-    if (!raw || raw.length > 2000) throw new Error('That plan code could not be read.');
+    const text = String(code || '').trim();
+    const version = text.indexOf('cp2.') === 0 ? 2 : 1;
+    const raw = text.replace(/^cp[12]\./, '');
+    if (!raw || raw.length > 4000) throw new Error('That plan code could not be read.');
     let bytes;
     try { bytes = b64decode(raw); }
     catch { throw new Error('That plan code could not be read.'); }
-    if (bytes[0] !== 1) throw new Error('That plan code could not be read.');
+    if (bytes[0] !== version) throw new Error('That plan code could not be read.');
     let cursor = 1;
     const title = readName(bytes, cursor);
     cursor = title.next;
@@ -201,7 +248,10 @@
       cursor += count;
       return ids;
     }
-    const picks = readIds();
+    const roles = emptyRoles();
+    let picks = [];
+    if (version === 2) ROLES.forEach(function (role) { roles[role] = readIds(); });
+    else picks = readIds();
     const bans = readIds();
     const compCount = bytes[cursor];
     cursor += 1;
@@ -217,47 +267,83 @@
       cursor += 5;
       comps.push({ name: compName.text, gods: gods });
     }
+    if (version === 2) {
+      return normalizePlan({ name: title.text, roles: roles, bans: bans, comps: comps }, []);
+    }
     return { name: title.text, picks: picks, bans: bans, comps: comps };
   }
 
-  function advise(plan, usedIds, action, ourSide, roster) {
+  function advise(plan, usedIds, action, ourSide, roster, ourPickIds) {
+    const normalized = normalizePlan(plan, roster);
     const used = new Set(usedIds || []);
-    const nameOf = id => {
-      const god = (roster || []).find(g => g.id === id);
+    const ours = new Set(ourPickIds || []);
+    const nameOf = function (id) {
+      const god = (roster || []).find(function (g) { return g.id === id; });
       return god ? god.name : id;
     };
-    const picks = (plan.picks || []).map(id => ({ id: id, name: nameOf(id), out: used.has(id) }));
-    const bans = (plan.bans || []).map(id => ({ id: id, name: nameOf(id), out: used.has(id) }));
-    const nextPick = (plan.picks || []).find(id => id && !used.has(id)) || null;
-    const nextBan = (plan.bans || []).find(id => id && !used.has(id)) || null;
-    const comps = (plan.comps || []).map(comp => {
+    const labelOf = function (role) { return ROLE_LABELS[role] || role; };
+    const roles = ROLES.map(function (role) {
+      const ids = normalized.roles[role];
+      const list = ids.map(function (id) { return { id: id, name: nameOf(id), out: used.has(id) }; });
+      const next = ids.find(function (id) { return id && !used.has(id); }) || null;
+      const filled = ids.some(function (id) { return ours.has(id); });
+      return { role: role, label: labelOf(role), list: list, next: next, filled: filled, needed: !filled };
+    });
+    const bans = normalized.bans.map(function (id) { return { id: id, name: nameOf(id), out: used.has(id) }; });
+    const nextBan = normalized.bans.find(function (id) { return id && !used.has(id); }) || null;
+    const nextRole = roles.find(function (role) { return role.next; });
+    const nextPick = nextRole ? nextRole.next : null;
+    const comps = normalized.comps.map(function (comp) {
       const gods = (comp.gods || []).slice(0, 5);
-      const brokenIds = gods.filter(id => id && used.has(id));
+      const brokenIds = gods.filter(function (id) { return id && used.has(id); });
       return {
         name: comp.name || 'Comp',
-        gods: gods.map((id, i) => ({ role: ROLES[i], id: id || '', name: id ? nameOf(id) : '—', out: !!(id && used.has(id)) })),
+        gods: gods.map(function (id, i) { return { role: ROLES[i], label: labelOf(ROLES[i]), id: id || '', name: id ? nameOf(id) : '—', out: !!(id && used.has(id)) }; }),
         possible: brokenIds.length === 0 && gods.filter(Boolean).length === 5,
         broken: brokenIds.length > 0
       };
     });
     let alert = null;
     if (action && action.god && action.side && action.side !== ourSide) {
-      const onPicks = (plan.picks || []).includes(action.god);
-      const onBans = (plan.bans || []).includes(action.god);
-      if (onPicks || onBans) {
-        const next = onPicks ? nextPick : nextBan;
+      const hitRoles = ROLES.filter(function (role) { return normalized.roles[role].indexOf(action.god) !== -1; });
+      const onBans = normalized.bans.indexOf(action.god) !== -1;
+      if (hitRoles.length || onBans) {
         const verb = action.type === 'ban' ? 'banned' : 'took';
-        const text = next
-          ? action.side + ' ' + verb + ' ' + nameOf(action.god) + ' — your next priority is ' + nameOf(next)
-          : action.side + ' ' + verb + ' ' + nameOf(action.god) + ' — nothing left on that list';
-        alert = { text: text, god: action.god, next: next, taker: action.side, list: onPicks ? 'pick' : 'ban' };
+        let text = '';
+        let next = null;
+        if (hitRoles.length) {
+          const parts = hitRoles.map(function (role) {
+            const following = normalized.roles[role].find(function (id) { return id && !used.has(id); }) || null;
+            if (!next) next = following;
+            return following ? labelOf(role) + ' next is ' + nameOf(following) : 'nothing left for ' + labelOf(role);
+          });
+          text = action.side + ' ' + verb + ' ' + nameOf(action.god) + ' — ' + parts.join('; ');
+        } else {
+          next = nextBan;
+          text = next
+            ? action.side + ' ' + verb + ' ' + nameOf(action.god) + ' — your next ban is ' + nameOf(next)
+            : action.side + ' ' + verb + ' ' + nameOf(action.god) + ' — nothing left on that list';
+        }
+        alert = { text: text, god: action.god, next: next, taker: action.side, list: hitRoles.length ? 'pick' : 'ban', roles: hitRoles };
       }
     }
-    return { picks: picks, bans: bans, nextPick: nextPick, nextBan: nextBan, comps: comps, alert: alert };
+    return {
+      roles: roles,
+      needed: roles.filter(function (role) { return role.needed; }).map(function (role) { return role.label; }),
+      picks: normalized.picks.map(function (id) { return { id: id, name: nameOf(id), out: used.has(id) }; }),
+      bans: bans,
+      nextPick: nextPick,
+      nextBan: nextBan,
+      comps: comps,
+      alert: alert
+    };
   }
 
   const api = {
     ROLES: ROLES,
+    ROLE_LABELS: ROLE_LABELS,
+    PLAN_LIMIT: PLAN_LIMIT,
+    normalizePlan: normalizePlan,
     encodeDraft: encodeDraft,
     decodeDraft: decodeDraft,
     orderedActions: orderedActions,

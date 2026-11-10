@@ -55,13 +55,34 @@ function unit() {
     comps: [{ name: 'Main', gods: ['nut', 'ra', 'zeus', 'neith', 'ymir'] }, { name: 'Backup', gods: ['agni', 'scylla', 'poseidon', 'hou-yi', 'geb'] }]
   };
   const planCode = Codec.encodePlan(plan, ids);
+  ok(planCode.startsWith('cp1.'), 'A flat priority list still encodes as cp1');
   const planBack = Codec.decodePlan(planCode, ids);
-  ok(planBack.name === 'Night comp' && planBack.picks.join() === plan.picks.join() && planBack.bans.join() === 'loki', 'Plan code round-trips priorities');
-  ok(planBack.comps[0].gods.join() === plan.comps[0].gods.join() && planBack.comps[1].name === 'Backup', 'Plan code round-trips target comps');
+  ok(planBack.name === 'Night comp' && planBack.picks.join() === plan.picks.join() && planBack.bans.join() === 'loki', 'A cp1 code round-trips the flat list');
+  ok(planBack.comps[0].gods.join() === plan.comps[0].gods.join() && planBack.comps[1].name === 'Backup', 'A cp1 code round-trips target comps');
+  const migrated = Codec.normalizePlan(planBack, roster);
+  ok(migrated.roles.Carry.join() === 'nut' && migrated.roles.Mid.join() === 'ra,zeus' && migrated.bans.join() === 'loki', 'A cp1 list lands in each god\'s primary role');
+
+  const modern = Codec.normalizePlan({
+    name: 'Night comp',
+    roles: { Carry: ['nut', 'neith'], Mid: ['ra', 'zeus'], Support: ['ymir'] },
+    bans: ['loki'],
+    comps: plan.comps
+  }, roster);
+  const modernCode = Codec.encodePlan(modern, ids);
+  ok(modernCode.startsWith('cp2.'), 'Role plans encode as cp2');
+  const modernBack = Codec.decodePlan(modernCode, ids);
+  ok(modernBack.roles.Carry.join() === 'nut,neith' && modernBack.roles.Mid.join() === 'ra,zeus' && modernBack.bans.join() === 'loki', 'A cp2 code round-trips role priorities');
+  ok(modernBack.comps[0].gods.join() === plan.comps[0].gods.join(), 'A cp2 code round-trips target comps');
 
   const taken = Codec.advise(plan, ['nut'], { side: 'Chaos', type: 'pick', god: 'nut' }, 'Order', roster);
-  ok(taken.nextPick === 'ra' && taken.picks[0].out && !taken.picks[1].out, 'Opponent taking Nut makes Ra the next pick');
-  ok(taken.alert.text === 'Chaos took Nut — your next priority is Ra', 'The alert names who took the god and the new priority');
+  ok(taken.nextPick === 'ra' && taken.roles.find(role => role.role === 'Carry').list[0].out, 'Opponent taking Nut leaves Ra as the next planned god');
+  ok(taken.alert.text === 'Chaos took Nut — nothing left for ADC', 'The alert names the role that ran out');
+  ok(taken.needed.join() === 'Solo,Jungle,Mid,ADC,Support', 'Every role is still needed until our team picks from it');
+  const shifted = Codec.advise(modern, ['nut'], { side: 'Chaos', type: 'pick', god: 'nut' }, 'Order', roster, []);
+  ok(shifted.roles.find(role => role.role === 'Carry').next === 'neith', 'Carry re-ranks to Neith after Nut is taken');
+  ok(shifted.alert.text === 'Chaos took Nut — ADC next is Neith', 'The alert names the new god for that role');
+  const filled = Codec.advise(modern, ['ra'], null, 'Order', roster, ['ra']);
+  ok(!filled.roles.find(role => role.role === 'Mid').needed && filled.needed.includes('ADC'), 'A role is filled once our team picks from its list');
   ok(taken.comps[0].broken && !taken.comps[0].possible && taken.comps[1].possible, 'A comp breaks when one of its gods is gone and the other stays possible');
   const banned = Codec.advise(plan, ['loki'], { side: 'Chaos', type: 'ban', god: 'loki' }, 'Order', roster);
   ok(banned.nextBan === null && /nothing left/.test(banned.alert.text), 'A banned priority with no remainder says the list is empty');
@@ -85,9 +106,15 @@ function dom() {
       window.localStorage.setItem('crystal-draft-plans', JSON.stringify([{
         id: 'plan-night',
         name: 'Night comp',
-        picks: ['nut', 'ra', 'zeus'],
+        roles: {
+          Solo: ['chaac', 'bellona'],
+          Jungle: ['bastet', 'fenrir'],
+          Mid: ['ra', 'zeus'],
+          Carry: ['nut', 'neith', 'hou-yi', 'apollo', 'artemis', 'cernunnos'],
+          Support: ['ymir', 'geb']
+        },
         bans: ['loki'],
-        comps: [{ name: 'Main', gods: ['nut', 'ra', 'zeus', 'neith', 'ymir'] }]
+        comps: [{ name: 'Main', gods: ['chaac', 'bastet', 'ra', 'nut', 'ymir'] }]
       }]));
     }
   });
@@ -104,6 +131,24 @@ function lockNamed(d, name) {
 
 function ui() {
   const d = dom();
+  el(d, 'plansBtn').click();
+  el(d, 'planTabs').querySelector('[data-plan-tab="Carry"]').click();
+  ok(el(d, 'planCount').textContent === 'ADC 6/10', 'ADC shows six of ten');
+  ok(el(d, 'planGrid').querySelectorAll('.god').length === 95, 'The plan grid lists every god');
+  ok(el(d, 'planGrid').querySelector('[data-plan-add="ra"] .role-badge').textContent === 'Mid', 'A god planned for another role is flagged');
+  const carryOrder = () => [...el(d, 'planPriority').querySelectorAll('.prio')].map(node => node.dataset.id);
+  ok(carryOrder()[0] === 'nut' && carryOrder().length === 6, 'The Carry row shows the saved priority');
+  el(d, 'planPriority').querySelector('[data-down]').click();
+  ok(carryOrder()[0] === 'neith' && carryOrder()[1] === 'nut', 'Down moves the first Carry priority');
+  el(d, 'planGrid').querySelector('[data-plan-add="nut"]').click();
+  ok(!carryOrder().includes('nut') && el(d, 'planCount').textContent === 'ADC 5/10', 'Clicking a selected portrait removes it');
+  el(d, 'planGrid').querySelector('[data-plan-add="nut"]').click();
+  ok(carryOrder().includes('nut'), 'Clicking the portrait again adds it back');
+  ['hachiman', 'cupid', 'chiron', 'danzaburou'].forEach(id => el(d, 'planGrid').querySelector('[data-plan-add="' + id + '"]').click());
+  ok(el(d, 'planCount').textContent === 'ADC 10/10', 'ADC reaches the soft limit');
+  el(d, 'planGrid').querySelector('[data-plan-add="izanami"]').click();
+  ok(el(d, 'toast').textContent === 'ADC already has 10 gods.' && carryOrder().length === 10, 'An 11th god is refused');
+  el(d, 'closePlans').click();
   el(d, 'soundEffects').click();
   el(d, 'displayName').value = 'Order captain';
   el(d, 'otherName').value = 'Chaos captain';
@@ -112,14 +157,15 @@ function ui() {
   el(d, 'assistPlan').dispatchEvent(new d.window.Event('change'));
   el(d, 'assistSide').value = 'Order';
   el(d, 'assistSide').dispatchEvent(new d.window.Event('change'));
-  ok(el(d, 'suggestPick').textContent.includes('Nut'), 'The assistant offers the first planned pick');
+  ok(el(d, 'suggest-Carry').textContent.includes('Nut'), 'The assistant offers Nut for ADC');
+  ok(el(d, 'assistBody').textContent.includes('Still needed') && el(d, 'assistBody').textContent.includes('ADC'), 'The assistant lists the roles still needed');
   const early = ['Achilles', 'Agni', 'Ah Puch', 'Amaterasu', 'Anhur', 'Anubis', 'Aphrodite'];
   early.forEach(name => lockNamed(d, name));
   lockNamed(d, 'Nut');
-  ok(el(d, 'toast').textContent === 'Chaos took Nut — your next priority is Ra', 'Live draft alerts when the rival takes a planned god');
+  ok(el(d, 'toast').textContent === 'Chaos took Nut — ADC next is Neith', 'Live draft alerts when the rival takes a planned god');
   ok(d.window.CrystalDraft.playedSounds().includes('alert'), 'The priority alert plays when sound effects are on');
-  ok(el(d, 'suggestPick').textContent.includes('Ra'), 'The next pick updates immediately');
-  ok(el(d, 'pickPriority').querySelector('.out').textContent === 'Nut', 'Nut is struck out of the priority list');
+  ok(el(d, 'suggest-Carry').textContent.includes('Neith'), 'ADC re-ranks to the next portrait');
+  ok(el(d, 'roleCarry').querySelector('.out').textContent.includes('Nut'), 'Nut is struck out of the ADC priority');
   ok(el(d, 'assistBody').textContent.includes('Broken'), 'The target comp is marked broken');
   while (d.window.CrystalDraft.getState().phase === 'draft') {
     const button = d.window.document.querySelector('.god:not(:disabled)');
