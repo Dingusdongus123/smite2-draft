@@ -68,10 +68,11 @@
     const gods = record.gods || [];
     if (gods.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
     const index = new Map(rosterIds.map((id, i) => [id, i]));
-    const version = Array.isArray(record.aspects) || Array.isArray(record.roles) ? 2 : 1;
-    if (version === 2 && record.aspects && record.aspects.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
+    const hasClock = record.clock && typeof record.clock === 'object';
+    const version = hasClock ? 3 : (Array.isArray(record.aspects) || Array.isArray(record.roles) ? 2 : 1);
+    if (version >= 2 && record.aspects && record.aspects.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
     if (record.roles && record.roles.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
-    const bytes = [version, format === 'extended' ? 1 : 0];
+    const bytes = [version === 3 ? 3 : version, format === 'extended' ? 1 : 0];
     const day = dayNumber(record.date);
     bytes.push((day >> 8) & 255, day & 255);
     for (const side of ['Order', 'Chaos']) {
@@ -86,7 +87,7 @@
         bytes.push(index.get(god));
       }
     }
-    if (version === 2) {
+    if (version >= 2) {
       const aspects = record.aspects || [];
       for (let i = 0; i < need; i++) bytes.push(aspects[i] && gods[i] ? 1 : 0);
       if (Array.isArray(record.roles)) {
@@ -96,7 +97,11 @@
         });
       }
     }
-    return (version === 2 ? 'cd2.' : 'cd1.') + b64encode(bytes);
+    if (version === 3) {
+      const u16 = value => { const n = Math.max(0, Math.min(65535, Math.round(Number(value) || 0))); return [(n >> 8) & 255, n & 255]; };
+      bytes.push(...u16(record.clock.pickSeconds), ...u16(record.clock.banSeconds), ...u16(record.clock.bankSeconds), record.clock.timeout === 'skip' ? 1 : 0);
+    }
+    return (version === 3 ? 'cd3.' : version === 2 ? 'cd2.' : 'cd1.') + b64encode(bytes);
   }
   function pickMask(format) {
     if (format === 'extended') return [0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1];
@@ -125,8 +130,8 @@
 
   function decodeDraft(code, rosterIds) {
     const text = String(code || '').trim();
-    const version = text.indexOf('cd2.') === 0 ? 2 : 1;
-    const raw = text.replace(/^cd[12]\./, '');
+    const version = text.indexOf('cd3.') === 0 ? 3 : text.indexOf('cd2.') === 0 ? 2 : 1;
+    const raw = text.replace(/^cd[123]\./, '');
     if (!raw || raw.length > 800) throw new Error('That draft ID could not be read.');
     let bytes;
     try { bytes = b64decode(raw); }
@@ -140,11 +145,13 @@
     const chaosName = readName(bytes, cursor);
     cursor = chaosName.next;
     const need = actionCount(format);
-    const aspectLen = version === 2 ? need : 0;
+    const aspectLen = version >= 2 ? need : 0;
     const picks = pickMask(format).reduce(function (sum, bit) { return sum + bit; }, 0);
     const baseLen = cursor + need + aspectLen;
     const withRoles = baseLen + picks;
-    if (bytes.length !== baseLen && !(version === 2 && bytes.length === withRoles)) throw new Error('That draft ID does not match a completed ' + format + ' draft.');
+    const clockLen = version === 3 ? 7 : 0;
+    const bodyLen = bytes.length - clockLen;
+    if (bodyLen !== baseLen && !(version >= 2 && bodyLen === withRoles)) throw new Error('That draft ID does not match a completed ' + format + ' draft.');
     const gods = [];
     const aspects = [];
     const roles = [];
@@ -153,10 +160,10 @@
       if (n === 255) gods.push(null);
       else if (n >= rosterIds.length) throw new Error('That draft ID is for a different roster.');
       else gods.push(rosterIds[n]);
-      aspects.push(version === 2 && bytes[cursor + need + i] === 1 && n !== 255);
+      aspects.push(version >= 2 && bytes[cursor + need + i] === 1 && n !== 255);
       roles.push(null);
     }
-    if (bytes.length === withRoles) {
+    if (bodyLen === withRoles) {
       let roleCursor = baseLen;
       for (let i = 0; i < need; i++) {
         if (!pickMask(format)[i]) continue;
@@ -170,7 +177,13 @@
       names: { Order: orderName.text, Chaos: chaosName.text },
       gods: gods,
       aspects: aspects,
-      roles: roles
+      roles: roles,
+      clock: version === 3 ? {
+        pickSeconds: (bytes[bytes.length - 7] << 8) | bytes[bytes.length - 6],
+        banSeconds: (bytes[bytes.length - 5] << 8) | bytes[bytes.length - 4],
+        bankSeconds: (bytes[bytes.length - 3] << 8) | bytes[bytes.length - 2],
+        timeout: bytes[bytes.length - 1] === 1 ? 'skip' : 'random'
+      } : null
     };
   }
 

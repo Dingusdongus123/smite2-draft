@@ -52,6 +52,12 @@ function unit() {
   const roleCode = Codec.encodeDraft(withRoles, ids);
   const roleBack = Codec.decodeDraft(roleCode, ids);
   ok(roleCode.startsWith('cd2.') && roleBack.roles[6].role === 'Mid' && roleBack.roles[6].confirmed === false && roleBack.roles[7].role === 'Solo' && roleBack.roles[7].confirmed === true && roleBack.roles[0] == null, 'A cd2 ID can carry roles and still reads older codes');
+  const timed = sample('extended');
+  timed.aspects = timed.gods.map(() => false);
+  timed.clock = { pickSeconds: 30, banSeconds: 0, bankSeconds: 45, timeout: 'skip' };
+  const timedBack = Codec.decodeDraft(Codec.encodeDraft(timed, ids), ids);
+  ok(Codec.encodeDraft(timed, ids).startsWith('cd3.') && timedBack.clock.pickSeconds === 30 && timedBack.clock.banSeconds === 0 && timedBack.clock.bankSeconds === 45 && timedBack.clock.timeout === 'skip' && timedBack.format === 'extended', 'A cd3 ID keeps the clock and an extended draft');
+  ok(Codec.decodeDraft(roleCode, ids).clock == null, 'An older cd2 ID has no clock');
   const link = 'https://smite2-draft.onrender.com/?replay=' + encodeURIComponent(Codec.encodeDraft(sample('standard'), ids));
   ok(Codec.decodeDraft(Codec.extractReplayCode(link), ids).names.Order === 'Renée', 'A replay link resolves to the same draft');
   assert.throws(() => Codec.encodeDraft({ format: 'standard', names: { Order: 'A', Chaos: 'B' }, gods: ['nut'] }, ids));

@@ -184,6 +184,18 @@ function unit() {
   ] }, roster, 11));
   checks += 1;
   console.log('PASS', 'A role cannot be used twice on one team');
+  const second = E.DRAFT_ORDERS.extended.slice(12, 16).map(turn => turn.type + turn.side[0]).join(',');
+  ok(E.DRAFT_ORDERS.extended.filter(turn => turn.type === 'ban').length === 10 && second === 'banC,banO,banC,banO', 'Extended second phase is four bans, Chaos first');
+  let lobby = E.create();
+  lobby = E.apply(lobby, { type: 'clock', config: { pickSeconds: 15, banSeconds: 0, bankSeconds: 30, timeout: 'skip' } }, roster, 1);
+  ok(lobby.phase === 'lobby' && lobby.config.pickSeconds === 15 && lobby.config.banSeconds === 0 && lobby.bank.Chaos === 30, 'The host can set the clock before the draft');
+  let quiet = E.apply(lobby, { type: 'start' }, roster, 1000);
+  ok(quiet.deadline === 0, 'A ban time of Off does not start a countdown');
+  quiet = E.apply(quiet, { type: 'commit', side: 'Order', god: roster[0].id }, roster, 500000);
+  ok(quiet.bank.Order === 30 && quiet.deadline === 0, 'Off does not spend the reserve');
+  assert.throws(() => E.apply(quiet, { type: 'clock', config: { pickSeconds: 60 } }, roster, 2));
+  checks += 1;
+  console.log('PASS', 'The clock locks when the draft starts');
 }
 
 function local() {
@@ -246,7 +258,7 @@ function local() {
   ok(toggled.aspect === true && el(d, 'summaryTeams').querySelector('[data-aspect="' + aspectBtn.dataset.aspect + '"]').classList.contains('on'), 'Clicking the toggle turns the aspect on');
   const decodedAspect = d.window.CrystalDraft.codec.decodeDraft(el(d, 'draftIdCode').textContent, roster.map(g => g.id));
   const aspectIndex = get(d).actions.findIndex(a => a.type === 'pick' && a.god === aspectBtn.dataset.aspect);
-  ok(el(d, 'draftIdCode').textContent.startsWith('cd2.') && decodedAspect.aspects[aspectIndex] === true, 'The summary ID records the aspect');
+  ok(el(d, 'draftIdCode').textContent.startsWith('cd3.') && decodedAspect.aspects[aspectIndex] === true && decodedAspect.clock.pickSeconds === 40 && decodedAspect.clock.banSeconds === 18, 'The summary ID records the aspect and the clock');
   ok(sounds(d).includes('pick'), 'Pick lock-in plays a distinct sound');
   click(d, 'inspectBtn');
   ok(el(d, 'summaryModal').hidden, 'Inspect final board');
@@ -259,8 +271,15 @@ function local() {
   ok(!/html/i.test(el(d, 'modeHelp').textContent) && /join link/i.test(el(d, 'modeHelp').textContent), 'Create-room copy shares the site and a link');
   ok(el(d, 'enterBtn').textContent.includes('Create room'), 'Create room action is available again');
   click(d, 'tabLocal');
+  d.window.document.querySelector('.presets[data-clock="pickSeconds"] [data-seconds="30"]').click();
+  ok(el(d, 'pickSeconds').value === '30' && /"pickSeconds":30/.test(d.window.localStorage.getItem('crystal-draft-clock') || ''), 'A pick preset is saved for the next visit');
+  set(d, 'pickSeconds', '40');
   set(d, 'format', 'extended');
   click(d, 'enterBtn');
+  while (get(d).step < 12) choose(d);
+  const phaseTurn = d.window.CrystalDraft.engine.current(get(d));
+  ok(phaseTurn.type === 'ban' && phaseTurn.side === 'Chaos' && /13\/20/.test(el(d, 'phaseLabel').textContent), 'Extended reaches the second ban phase');
+  ok(el(d, 'orderTeam').querySelectorAll('.ban').length === 5 && d.window.getComputedStyle(el(d, 'orderTeam').querySelector('.bans')).flexWrap === 'nowrap', 'Five ban slots stay on one row');
   while (get(d).phase === 'draft') choose(d);
   s = get(d);
   ok(s.actions.length === 20, 'Full extended draft completes');
@@ -376,8 +395,13 @@ async function onlineUi() {
   await waitFor(() => !el(h, 'enterBtn').disabled && el(g, 'enterBtn').disabled, 4000, 'rival joined');
   ok(sounds(h).includes('join'), 'Host hears a chime when the rival joins');
   ok(!el(h, 'chaosTeam').querySelector('[onerror]'), 'Online names are escaped');
+  h.window.document.querySelector('.presets[data-clock="pickSeconds"] [data-seconds="15"]').click();
+  h.window.document.querySelector('.presets[data-clock="banSeconds"] [data-seconds="0"]').click();
+  await waitFor(() => get(g).config.pickSeconds === 15 && get(g).config.banSeconds === 0 && /Pick 15s/.test(el(g, 'clockLive').textContent) && /Ban off/.test(el(g, 'clockLive').textContent), 4000, 'guest clock');
+  ok(el(g, 'hostSettings').style.display === 'none', 'The guest sees the live clock without the host controls');
   click(h, 'enterBtn');
   await waitFor(() => get(g).phase === 'draft' && get(h).phase === 'draft', 4000, 'draft started');
+  ok(el(h, 'pickSeconds').disabled && get(h).config.banSeconds === 0, 'The clock locks when the draft starts');
   ok(get(g).names.Chaos.includes('img') && get(h).names.Order === 'Host captain', 'Names synchronize from the server');
   const early = g.window.document.querySelector('.god:not(:disabled)');
   early.click();
@@ -526,6 +550,42 @@ async function serverProtocol() {
   guest.close();
 }
 
+async function extendedRoom() {
+  const host = await connect(serverUrl);
+  const createdWait = once(host, m => m.type === 'welcome');
+  host.send(JSON.stringify({ type: 'create', name: 'Order', config: { ...config, format: 'extended', pickSeconds: 20, banSeconds: 15, bankSeconds: 45 } }));
+  const created = await createdWait;
+  const guest = await connect(serverUrl);
+  const joinedWait = once(guest, m => m.type === 'welcome');
+  guest.send(JSON.stringify({ type: 'join', code: created.code, name: 'Chaos' }));
+  await joinedWait;
+  const guestClock = once(guest, m => m.type === 'state' && m.state.config.pickSeconds === 45 && m.state.config.banSeconds === 0);
+  host.send(JSON.stringify({ type: 'action', action: { type: 'clock', config: { pickSeconds: 45, banSeconds: 0, bankSeconds: 45, timeout: 'skip' } } }));
+  const clocked = await guestClock;
+  ok(clocked.state.phase === 'lobby' && clocked.state.bank.Order === 45, 'The guest receives the host clock before the draft');
+  const denied = once(guest, m => m.type === 'notice');
+  guest.send(JSON.stringify({ type: 'action', action: { type: 'clock', config: { pickSeconds: 60 } } }));
+  ok(/host can set the clock/i.test((await denied).message), 'A guest cannot change the clock');
+  const started = once(guest, m => m.type === 'state' && m.state.phase === 'draft');
+  host.send(JSON.stringify({ type: 'action', action: { type: 'start', config: { ...config, format: 'extended', pickSeconds: 45, banSeconds: 0, bankSeconds: 45, timeout: 'skip' }, name: 'Order', rev: clocked.state.rev } }));
+  let current = (await started).state;
+  ok(current.deadline === 0 && current.config.format === 'extended', 'The server starts an extended draft with ban Off');
+  const locked = once(host, m => m.type === 'notice');
+  host.send(JSON.stringify({ type: 'action', action: { type: 'clock', config: { pickSeconds: 60 } } }));
+  ok(/locks/i.test((await locked).message), 'The server rejects a clock change after the start');
+  for (let step = 0; step < 20; step++) {
+    const turn = E.current(current);
+    const sideWs = turn.side === 'Order' ? host : guest;
+    const next = once(host, m => m.type === 'state' && m.state.rev === current.rev + 1);
+    sideWs.send(JSON.stringify({ type: 'action', action: { type: 'commit', side: turn.side, god: roster.find(g => !current.actions.some(a => a.god === g.id)).id, rev: current.rev } }));
+    current = (await next).state;
+    if (step === 11) ok(E.current(current).type === 'ban' && E.current(current).side === 'Chaos', 'The server reaches the second ban phase on a Chaos ban');
+  }
+  ok(current.phase === 'summary' && ['Order', 'Chaos'].every(side => current.actions.filter(a => a.side === side && a.type === 'ban').length === 5), 'A full extended room draft gives five bans to each team');
+  host.close();
+  guest.close();
+}
+
 async function serverTimeoutAndIdle() {
   const roomApp = createApp({ idleMs: 350, tickMs: 40 });
   const { url } = await listen(roomApp);
@@ -609,6 +669,7 @@ async function health() {
     await health();
     await onlineUi();
     await serverProtocol();
+    await extendedRoom();
     await serverTimeoutAndIdle();
     ok(failures.length === 0, 'No script or DOM runtime errors');
     console.log(`\n${checks} checks passed.`);
