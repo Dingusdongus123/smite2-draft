@@ -63,6 +63,11 @@ function unit() {
   ok(Board.counts(capped).Chaos === 1, 'The other team is not blocked by that cap');
   Board.clearWards(capped, 'Order');
   ok(Board.counts(capped).Order === 0 && Board.counts(capped).Chaos === 1, 'Clearing one team leaves the other');
+  const icons = Board.blank();
+  for (let i = 0; i < 11; i++) Board.placeToken(icons, { godId: 'nut', side: 'Order', x: i, y: i });
+  ok(icons.tokens.length === 11 && Board.counts(icons).Order === 0, 'God icons do not count toward the ward cap');
+  Board.clearTokens(icons);
+  ok(icons.tokens.length === 0, 'Clear gods removes every icon');
 }
 
 function serve() {
@@ -140,6 +145,56 @@ async function page(server) {
   ok(w.CrystalMap.counts().Order === 2, 'The page counts both Order wards');
   w.CrystalMap.undo();
   ok(w.CrystalMap.counts().Order === 1 && w.CrystalMap.getState().wards[0].type === 'vision', 'Undo removes the ward placed from the selector');
+  const godId = w.CrystalMap.placeToken('nut', 'Order', 480, 520);
+  const godIcon = w.document.querySelector('[data-token="' + godId + '"]');
+  const portrait = godIcon && godIcon.querySelector('image');
+  ok(portrait && portrait.getAttribute('href').endsWith('/nut.webp') && Number(portrait.getAttribute('width')) === Data.GOD_ICON_PX, 'A placed god is a small round portrait');
+  await new Promise(resolve => setTimeout(resolve, 200));
+  const stored = JSON.parse(w.localStorage.getItem('crystal-map-board-v2'));
+  ok(stored.tokens.some(token => token.godId === 'nut' && token.side === 'Order'), 'God icons persist in the board save');
+  ok((godIcon.querySelector('.halo').getAttribute('stroke') || '').toLowerCase() === '#3ec6ff', 'An Order god has a blue ring');
+  const chaosGod = w.CrystalMap.placeToken('ra', 'Chaos', 520, 300);
+  ok((w.document.querySelector('[data-token="' + chaosGod + '"] .halo').getAttribute('stroke') || '').toLowerCase() === '#ff9a3c', 'A Chaos god has an orange ring');
+  const liveGod = w.document.querySelector('[data-token="' + godId + '"]');
+  const godPress = new w.Event('pointerdown', { bubbles: true });
+  Object.defineProperties(godPress, { button: { value: 0 }, clientX: { value: 12 }, clientY: { value: 12 } });
+  liveGod.dispatchEvent(godPress);
+  const release = new w.Event('pointerup', { bubbles: true });
+  Object.defineProperties(release, { button: { value: 0 }, clientX: { value: 12 }, clientY: { value: 12 } });
+  w.dispatchEvent(release);
+  ok(!w.document.querySelector('[data-token="' + godId + '"]'), 'Clicking a god icon removes it');
+  w.document.querySelector('[data-token="' + chaosGod + '"]').dispatchEvent(new w.Event('contextmenu', { bubbles: true }));
+  ok(w.CrystalMap.getState().tokens.length === 0, 'Right-click removes a god icon');
+  w.CrystalMap.placeToken('ymir', 'Order', 300, 300);
+  w.document.getElementById('clearGods').click();
+  ok(w.CrystalMap.getState().tokens.length === 0 && w.CrystalMap.counts().Order === 1, 'Clear gods leaves the wards in place');
+  await new Promise(resolve => {
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (w.document.querySelectorAll('#godList .godchip').length === 95 || Date.now() - start > 2000) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, 20);
+  });
+  ok(w.document.querySelectorAll('#godList .godchip').length === 95, 'The god tray lists all 95 portraits');
+  const layers = [...w.document.getElementById('board').children].map(node => node.id).filter(Boolean);
+  ok(layers.indexOf('ink') < layers.indexOf('vision') && layers.indexOf('vision') < layers.indexOf('tokens'), 'Gods paint above wards and drawings');
+  w.document.querySelector('#godList [data-god="ra"]').click();
+  const mapClick = new w.Event('pointerdown', { bubbles: true });
+  Object.defineProperties(mapClick, { button: { value: 0 }, clientX: { value: 40 }, clientY: { value: 40 } });
+  w.document.getElementById('board').dispatchEvent(mapClick);
+  ok(w.CrystalMap.getState().tokens.some(token => token.godId === 'ra' && token.side === 'Order'), 'Clicking the map places the armed god');
+  w.document.getElementById('godSearch').value = 'nut';
+  w.document.getElementById('godSearch').dispatchEvent(new w.Event('input'));
+  ok(w.document.querySelectorAll('#godList .godchip').length === 1, 'The god tray search filters by name');
+  const roster = w.CrystalMap.gods().map(god => god.id);
+  const code = w.DraftCodec.encodeDraft({ format: 'standard', date: '2026-11-10', names: { Order: 'Blue', Chaos: 'Orange' }, gods: roster.slice(0, 16) }, roster);
+  w.localStorage.setItem('crystal-draft-history', JSON.stringify([{ id: code }]));
+  w.document.getElementById('loadDraft').click();
+  ok(w.document.querySelectorAll('#draftGods .godchip').length === 10, 'The last saved draft loads both teams into the shortcut row');
+  w.document.querySelector('#draftGods [data-team="Chaos"]').click();
+  ok(w.document.getElementById('sideChaos').classList.contains('active'), 'A shortcut pick selects that god’s team');
   ok(w.document.body.textContent.includes('Conquest') || w.document.title.includes('Conquest'), 'The page is the Conquest board');
   const built = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   ok(built.includes('href="map.html"'), 'The draft page links to the map');

@@ -109,6 +109,10 @@
       state.tokens = state.tokens.filter(function (t) { return t.id !== id; });
     });
   }
+  function clearTokens(state) {
+    if (!state.tokens.length) return false;
+    return transaction(state, function () { state.tokens = []; });
+  }
   function addStroke(state, stroke) {
     if (!stroke || !stroke.points || stroke.points.length < 2) return null;
     let id = '';
@@ -192,7 +196,7 @@
 
   const api = {
     blank: blank, undo: undo, redo: redo, placeWard: placeWard, moveWard: moveWard, removeWard: removeWard,
-    clearWards: clearWards, placeToken: placeToken, moveToken: moveToken, removeToken: removeToken,
+    clearWards: clearWards, placeToken: placeToken, moveToken: moveToken, removeToken: removeToken, clearTokens: clearTokens,
     addStroke: addStroke, eraseNear: eraseNear, erasePoints: erasePoints, clearDrawings: clearDrawings, clearAll: clearAll,
     counts: counts, serialize: serialize, hydrate: hydrate
   };

@@ -32,6 +32,19 @@ label.check{display:flex;align-items:center;gap:8px;cursor:pointer}label.check i
 .ward .radius{fill:#3ec6ff22;stroke:#3ec6ff;stroke-width:2;pointer-events:none}.ward.chaos .radius{fill:#ff9a3c22;stroke:#ff9a3c}
 .ward .team-ring{fill:none;stroke:#3ec6ff;stroke-width:1.5;pointer-events:none}.ward.chaos .team-ring{stroke:#ff9a3c}
 .ward .icon{pointer-events:none}.ward .hit{fill:transparent}
+#sideOrder.active{border-color:#3ec6ff;color:#b9ecff;background:#123044}
+#sideChaos.active{border-color:#ff9a3c;color:#ffc48a;background:#3a2414}
+.token .halo{fill:none;pointer-events:none}.token image{pointer-events:none}
+#godSearch{width:100%;margin-top:6px;padding:8px 10px;border-radius:8px;border:1px solid var(--edge);background:#0b1525;color:var(--ink)}
+#loadDraft{margin-top:6px;border:1px solid var(--edge);background:#0b1525;color:var(--ink);border-radius:8px;padding:6px 10px;font-size:12px}
+.godtray{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;align-items:start;align-content:start;max-height:220px;overflow:auto;margin-top:6px}
+.godchip{border:1px solid var(--edge);background:#0b1525;color:var(--muted);padding:3px;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:8px;min-width:0}
+.godchip img{width:100%;height:44px;object-fit:cover;border-radius:6px;display:block}
+.godchip span{font-size:9px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.godchip.armed{border-color:#8ceeff99;color:var(--cyan)}
+.draft-row{display:flex;gap:4px;overflow:auto;margin-top:6px;padding-bottom:2px}
+.draft-row .godchip{width:44px;flex:none}
+.draft-row .godchip img{height:36px}
 .wardlist button{display:inline-flex;align-items:center;gap:6px}
 .wardlist img{width:26px;height:26px;display:block}
 svg.radii-off .radius{display:none}
@@ -80,16 +93,25 @@ svg.radii-off .radius{display:none}
       <button type="button" id="clearDraw">Clear drawings</button>
       <button type="button" id="clearOrder">Clear Order wards</button>
       <button type="button" id="clearChaos">Clear Chaos wards</button>
+      <button type="button" id="clearGods">Clear gods</button>
       <button type="button" id="fitBtn">Fit map</button>
       <button type="button" id="exportBtn">Export PNG</button>
     </div>
-    <p class="muted" style="margin-top:10px">Wheel zooms. Drag a ward to move it. Click or right-click a ward to remove it. Ten wards per team.</p>
+    <h2>Gods</h2>
+    <p class="muted">Click a portrait, then the map. Or drag it onto the map.</p>
+    <input id="godSearch" placeholder="Search a god" aria-label="Search gods">
+    <div id="draftGods" class="draft-row" hidden></div>
+    <button type="button" id="loadDraft" hidden>Last draft</button>
+    <div id="godList" class="godtray"></div>
+    <p class="muted" style="margin-top:10px">Drag a god to move it. Click or right-click a god to remove it. Gods do not count toward the 10-ward cap.</p>
   </aside>
   <main class="stage">
     <svg id="board" viewBox="0 0 1024 1024" role="img" aria-label="SMITE 2 Conquest map">
       <image id="mapImage" href="src/assets/conquest.png" x="0" y="0" width="1024" height="1024"/>
+      <defs><clipPath id="roundGod" clipPathUnits="objectBoundingBox"><circle cx="0.5" cy="0.5" r="0.5"/></clipPath></defs>
       <g id="ink"></g>
       <g id="vision"></g>
+      <g id="tokens"></g>
     </svg>
     <p class="credit">Map image: <a href="https://smitesource.com/maps/conquest" target="_blank" rel="noopener">SmiteSource</a> · Ward icons: <a href="https://wiki.smite2.com/" target="_blank" rel="noopener">wiki.smite2.com</a></p>
   </main>
@@ -103,6 +125,8 @@ svg.radii-off .radius{display:none}
   </div>
 </div>
 <div id="toast" role="status" hidden style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#15273df5;border:1px solid #8ceeff66;color:#effbff;padding:13px 22px;border-radius:9px;font-size:12px;z-index:8;max-width:90vw"></div>
+<script src="src/engine.js"></script>
+<script src="src/draft-codec.js"></script>
 <script src="src/map-data.js"></script>
 <script src="src/map-board.js"></script>
 <script src="src/map-page.js"></script>
