@@ -34,7 +34,8 @@ label.check{display:flex;align-items:center;gap:8px;cursor:pointer}label.check i
 .ward .icon{pointer-events:none}.ward .hit{fill:transparent}
 #sideOrder.active{border-color:#3ec6ff;color:#b9ecff;background:#123044}
 #sideChaos.active{border-color:#ff9a3c;color:#ffc48a;background:#3a2414}
-.token .halo{fill:none;pointer-events:none}.token image{pointer-events:none}
+.token .halo,.token .mark{fill:none;pointer-events:none}.token image{pointer-events:none}
+.token .mark{stroke:#ffe08a;stroke-width:2.5}
 #godSearch{width:100%;margin-top:6px;padding:8px 10px;border-radius:8px;border:1px solid var(--edge);background:#0b1525;color:var(--ink)}
 #loadDraft{margin-top:6px;border:1px solid var(--edge);background:#0b1525;color:var(--ink);border-radius:8px;padding:6px 10px;font-size:12px}
 .godtray{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;align-items:start;align-content:start;max-height:220px;overflow:auto;margin-top:6px}
@@ -94,6 +95,7 @@ svg.radii-off .radius{display:none}
       <button type="button" id="clearOrder">Clear Order wards</button>
       <button type="button" id="clearChaos">Clear Chaos wards</button>
       <button type="button" id="clearGods">Clear gods</button>
+      <button type="button" id="removeGod" disabled>Remove god</button>
       <button type="button" id="fitBtn">Fit map</button>
       <button type="button" id="exportBtn">Export PNG</button>
     </div>
@@ -103,7 +105,7 @@ svg.radii-off .radius{display:none}
     <div id="draftGods" class="draft-row" hidden></div>
     <button type="button" id="loadDraft" hidden>Last draft</button>
     <div id="godList" class="godtray"></div>
-    <p class="muted" style="margin-top:10px">Drag a god to move it. Click or right-click a god to remove it. Gods do not count toward the 10-ward cap.</p>
+    <p class="muted" style="margin-top:10px">Click a god to select it. Drag to move it. Right-click, Delete, or Remove god deletes it. Gods do not count toward the 10-ward cap.</p>
   </aside>
   <main class="stage">
     <svg id="board" viewBox="0 0 1024 1024" role="img" aria-label="SMITE 2 Conquest map">

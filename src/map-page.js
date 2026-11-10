@@ -19,6 +19,7 @@
   let showRadii = true;
   let gods = [];
   let armedGod = '';
+  let selectedToken = '';
   let draftPicks = [];
   const GOD_PX = Data.GOD_ICON_PX;
   let drag = null;
@@ -135,8 +136,9 @@
     const half = GOD_PX / 2;
     const chaos = token.side === 'Chaos';
     const ink = chaos ? '#ff9a3c' : '#3ec6ff';
-    const cls = chaos ? 'token chaos' : 'token order';
-    return `<g class="${cls}" data-token="${token.id}" transform="translate(${token.x} ${token.y})"><circle class="halo" r="${(half + 1).toFixed(1)}" fill="none" stroke="${ink}" stroke-width="1.5"/><image href="src/portraits/${esc(token.godId)}.webp" x="${-half}" y="${-half}" width="${GOD_PX}" height="${GOD_PX}" clip-path="url(#roundGod)"/><circle class="hit" r="${half}" fill="transparent"/><title>${esc(token.side)} ${esc(name)}</title></g>`;
+    const picked = selectedToken === token.id;
+    const cls = (chaos ? 'token chaos' : 'token order') + (picked ? ' selected' : '');
+    return `<g class="${cls}" data-token="${token.id}" transform="translate(${token.x} ${token.y})"><circle class="mark" r="${(half + 3).toFixed(1)}" fill="none" stroke="#ffe08a" stroke-width="2.5" opacity="${picked ? 1 : 0}" pointer-events="none"/><circle class="halo" r="${(half + 1).toFixed(1)}" fill="none" stroke="${ink}" stroke-width="1.5"/><image href="src/portraits/${esc(token.godId)}.webp" x="${-half}" y="${-half}" width="${GOD_PX}" height="${GOD_PX}" clip-path="url(#roundGod)"/><circle class="hit" r="${half}" fill="transparent"/><title>${esc(token.side)} ${esc(name)}</title></g>`;
   }
   function godButton(g, team) {
     const armed = armedGod === g.id && (!team || side === team);
@@ -178,9 +180,17 @@
   }
   function placeGod(godId, team, x, y) {
     const id = Board.placeToken(state, { godId: godId, side: team || side, x: x, y: y });
+    selectedToken = id;
     play('place');
     changed();
     return id;
+  }
+  function removeSelected() {
+    if (!selectedToken) return;
+    const id = selectedToken;
+    selectedToken = '';
+    if (Board.removeToken(state, id)) changed();
+    else render();
   }
   function wardSvg(ward) {
     const spec = Data.wardById(ward.type);
@@ -207,6 +217,7 @@
     $('wardHint').textContent = spec ? `${spec.name}: 7.2m radius · drawn size estimated` : '';
     $('undoBtn').disabled = !state.past.length;
     $('redoBtn').disabled = !state.future.length;
+    if ($('removeGod')) $('removeGod').disabled = !state.tokens.some(token => token.id === selectedToken);
   }
   function changed() { render(); persist(); }
 
@@ -224,6 +235,7 @@
       const item = tokenId ? state.tokens.find(t => t.id === tokenId) : state.wards.find(w => w.id === drag.id);
       drag.originX = item.x;
       drag.originY = item.y;
+      if (tokenId) selectedToken = tokenId;
       if (ev.pointerId != null && board.setPointerCapture) {
         try { board.setPointerCapture(ev.pointerId); } catch { /* already captured */ }
       }
@@ -299,7 +311,7 @@
         item.y = drag.originY;
         Board.moveToken(state, drag.id, x, y);
         persist();
-      } else Board.removeToken(state, drag.id);
+      }
     } else if (drag.moved) {
       const item = state.wards.find(w => w.id === drag.id);
       const x = item.x;
@@ -366,7 +378,13 @@
     ev.preventDefault();
     const token = ev.target.closest && ev.target.closest('[data-token]');
     const pin = ev.target.closest && ev.target.closest('[data-ward]');
-    if (token) { Board.removeToken(state, token.getAttribute('data-token')); changed(); return; }
+    if (token) {
+      const id = token.getAttribute('data-token');
+      if (selectedToken === id) selectedToken = '';
+      Board.removeToken(state, id);
+      changed();
+      return;
+    }
     if (!pin) return;
     Board.removeWard(state, pin.getAttribute('data-ward'));
     changed();
@@ -375,6 +393,11 @@
   window.addEventListener('pointerup', onUp);
   document.addEventListener('keydown', ev => {
     const meta = ev.metaKey || ev.ctrlKey;
+    const typing = ev.target && (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA');
+    if (!typing && (ev.key === 'Delete' || ev.key === 'Backspace') && selectedToken) {
+      ev.preventDefault();
+      removeSelected();
+    }
     if (ev.key === 'Escape') $('about').hidden = true;
     if (meta && ev.key.toLowerCase() === 'z') { ev.preventDefault(); if (ev.shiftKey) Board.redo(state); else Board.undo(state); changed(); }
     if (meta && ev.key.toLowerCase() === 'y') { ev.preventDefault(); Board.redo(state); changed(); }
@@ -484,7 +507,8 @@
     const point = svgPoint(ev);
     placeGod(parts[1], parts[2] || side, point.x, point.y);
   });
-  $('clearGods').onclick = () => { if (Board.clearTokens(state)) changed(); };
+  $('clearGods').onclick = () => { selectedToken = ''; if (Board.clearTokens(state)) changed(); else render(); };
+  $('removeGod').onclick = removeSelected;
   $('loadDraft').onclick = () => { loadLastDraft(); if (!draftPicks.length) toast('No saved draft picks to load.'); };
   function loadJson(url) {
     if (typeof fetch === 'function') return fetch(url).then(r => r.json());
