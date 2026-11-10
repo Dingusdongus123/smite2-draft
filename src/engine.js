@@ -34,8 +34,19 @@ function apply(s,a,roster,now=Date.now()){
   if(n.phase!=='draft')throw Error('Not running');n.remaining=n.deadline-now;n.phase='paused';
  }else if(a.type==='resume'){
   if(n.phase!=='paused')throw Error('Not paused');n.phase='draft';n.deadline=now+n.remaining;
+ }else if(a.type==='aspect'){
+  if(!['draft','paused','summary'].includes(n.phase))throw Error('No active draft');
+  if(a.side!=='Order'&&a.side!=='Chaos')throw Error('Unknown side');
+  const pick=n.actions.find(x=>x.type==='pick'&&x.side===a.side&&x.god===a.god);
+  if(!pick)throw Error('That pick is not on this team');
+  const god=(roster||[]).find(g=>g.id===a.god);
+  if(!god||!god.aspect)throw Error('That god has no aspect');
+  pick.aspect=!!a.on;
  }else if(a.type==='undo'){
-  if(!n.history.length)throw Error('Nothing to undo');let h=n.history.pop();n.actions=h.actions;n.step=h.step;n.bank=h.bank;n.phase='draft';n.deadline=now+base(n)*1000;
+  if(!n.history.length)throw Error('Nothing to undo');
+  const kept=new Map(n.actions.filter(x=>x.aspect&&x.god).map(x=>[x.side+'\0'+x.god,true]));
+  let h=n.history.pop();n.actions=h.actions;n.step=h.step;n.bank=h.bank;n.phase='draft';n.deadline=now+base(n)*1000;
+  n.actions.forEach(x=>{if(x.god&&kept.get(x.side+'\0'+x.god))x.aspect=true;});
  }else if(a.type==='restart'){
   n=create(n.config);n.names=copy(s.names);
  }else throw Error('Unknown action');

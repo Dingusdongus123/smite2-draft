@@ -13,6 +13,7 @@ Open `index.html` (or the deployed site).
 - **Same screen** — two captains, one browser. No server.
 - **Draft history** — a finished draft gets an ID you can copy, replay, or paste. The ID itself holds the picks and bans, so it still works after the free room server sleeps.
 - **Draft plans** — private role priorities (Solo, Jungle, Mid, Support, ADC) and a ban list, built from portraits. During a draft, attach one to your side. The advisor suggests the next god for each role and re-ranks on this screen when the other captain takes a planned god.
+- **Aspects** — picked gods that have a SMITE 2 Aspect show a small yellow toggle on the portrait. The owning team (or either captain, on one screen) can turn it on during or after the draft. Online rooms sync it, and it is stored in the draft ID.
 - **Create room** — you are Order. Copy the join link or read the room code to your rival.
 - **Join room** — you are Chaos. Paste the code, or open a link like `https://smite2-draft.onrender.com/?room=CODE`.
 

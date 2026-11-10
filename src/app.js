@@ -441,10 +441,19 @@ function onMessage(m) {
 }
 
 function picture(g, extra = '') { return `<img src="${g.image}" alt="${esc(g.name)}" ${extra}>`; }
+function canToggleAspect(side) {
+  if (mode === 'replay' || !['draft', 'paused', 'summary'].includes(state.phase)) return false;
+  if (mode === 'local') return true;
+  return localSide() === side;
+}
 function slotHTML(a, i, side) {
   if (a?.god) {
     const g = byId[a.god];
-    return `<div class="slot">${picture(g)}<div class="slottext"><strong>${esc(g.name)}</strong><small>${esc(g.role)} · ${esc(g.damage)}</small></div></div>`;
+    const aspect = g.aspect;
+    const button = aspect
+      ? `<button type="button" class="aspect-btn ${a.aspect ? 'on' : ''}" data-aspect="${esc(g.id)}" data-side="${side}" title="${esc(aspect.name + ' — ' + aspect.description)}" aria-pressed="${a.aspect ? 'true' : 'false'}" aria-label="${esc((a.aspect ? 'Aspect on: ' : 'Toggle ') + aspect.name)}" ${canToggleAspect(side) ? '' : 'disabled'}></button>`
+      : '';
+    return `<div class="slot"><div class="face ${a.aspect ? 'aspected' : ''}">${picture(g)}${button}</div><div class="slottext"><strong>${esc(g.name)}</strong><small>${esc(g.role)} · ${esc(g.damage)}</small></div></div>`;
   }
   const upcoming = E.current(state)?.type === 'pick' && E.current(state)?.side === side && i === state.actions.filter(x => x.side === side && x.type === 'pick').length && state.phase === 'draft';
   return `<div class="slot empty ${upcoming ? 'upcoming' : ''}"><b>${String(i + 1).padStart(2, '0')}</b>${a ? 'PASSED ON TIMEOUT' : 'Awaiting selection'}</div>`;
@@ -482,7 +491,8 @@ function renderGrid() {
   $('godCount').textContent = `${gods.length - used.size} available · ${filtered.length} shown`;
   $('godGrid').innerHTML = filtered.length ? filtered.map(g => {
     const action = state.actions.find(a => a.god === g.id);
-    return `<button class="god ${selected === g.id ? 'selected' : ''}" data-god="${g.id}" ${used.has(g.id) ? 'disabled' : ''} title="${esc(g.name + ' — ' + g.title + ' · ' + g.role + ' · ' + g.pantheon + ' · ' + g.damage)}" aria-label="${esc(g.name + (action ? ' ' + action.type + ' by ' + action.side : ''))}" aria-pressed="${selected === g.id}">${picture(g, 'loading="lazy"')}<span>${esc(g.name)}</span>${action ? `<span class="status">${action.type.toUpperCase()}</span>` : ''}</button>`;
+    const aspectNote = g.aspect ? ' · ' + g.aspect.name : '';
+    return `<button class="god ${selected === g.id ? 'selected' : ''}" data-god="${g.id}" ${used.has(g.id) ? 'disabled' : ''} title="${esc(g.name + ' — ' + g.title + ' · ' + g.role + ' · ' + g.pantheon + ' · ' + g.damage + aspectNote)}" aria-label="${esc(g.name + (action ? ' ' + action.type + ' by ' + action.side : '') + aspectNote)}" aria-pressed="${selected === g.id}">${picture(g, 'loading="lazy"')}<span>${esc(g.name)}</span>${action ? `<span class="status">${action.type.toUpperCase()}</span>` : ''}</button>`;
   }).join('') : '<div class="empty-grid">No gods match these filters. Try another search.</div>';
 }
 function showPreview(id) {
@@ -493,7 +503,7 @@ function showPreview(id) {
     $('previewImg').src = g.image;
     $('previewImg').alt = g.name;
     $('previewName').textContent = g.name;
-    $('previewMeta').textContent = `${g.title} · ${g.pantheon} · ${g.role} · ${g.damage} · ${g.class} (approx.)`;
+    $('previewMeta').textContent = `${g.title} · ${g.pantheon} · ${g.role} · ${g.damage} · ${g.class} (approx.)${g.aspect ? ' · ' + g.aspect.name + ': ' + g.aspect.description : ''}`;
   } else {
     $('previewImg').removeAttribute('src');
     $('previewName').textContent = 'Discover your next pick';
@@ -511,7 +521,8 @@ function renderSummary() {
         format: state.config.format,
         names: state.names,
         date: new Date().toISOString(),
-        gods: state.actions.map(a => a.god || null)
+        gods: state.actions.map(a => a.god || null),
+        aspects: state.actions.map(a => !!(a.type === 'pick' && a.aspect))
       }, gods.map(g => g.id));
       rememberHistory({ id: currentDraftId, format: state.config.format, names: state.names, date: new Date().toISOString().slice(0, 10) });
     } catch (error) { currentDraftId = ''; toast(error.message); }
@@ -773,7 +784,7 @@ function exportSummary() {
   const lines = ['CRYSTAL DRAFT — SMITE 2', `Format: ${state.config.format}`, ''];
   for (const side of ['Order', 'Chaos']) {
     lines.push(`${side} — ${state.names[side]}`);
-    for (const type of ['pick', 'ban']) lines.push(`${type.toUpperCase()}S: ` + state.actions.filter(a => a.side === side && a.type === type).map(a => a.god ? byId[a.god].name : '[timeout pass]').join(', '));
+    for (const type of ['pick', 'ban']) lines.push(`${type.toUpperCase()}S: ` + state.actions.filter(a => a.side === side && a.type === type).map(a => a.god ? byId[a.god].name + (a.aspect && byId[a.god].aspect ? ' (' + byId[a.god].aspect.name + ')' : '') : '[timeout pass]').join(', '));
     lines.push('');
   }
   const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
@@ -885,18 +896,34 @@ function noteAssist(action) {
   if (document.hidden) flashTitle('Priority shifted · Crystal Draft');
 }
 function replayState(record, step) {
-  const roster = gods.map(g => ({ id: g.id }));
   let next = E.create({ format: record.format, timeout: 'skip' });
   next.names = { Order: record.names.Order, Chaos: record.names.Chaos };
   const origin = Date.parse(record.date) || Date.UTC(2026, 0, 1);
-  next = E.apply(next, { type: 'start' }, roster, origin);
+  next = E.apply(next, { type: 'start' }, gods, origin);
   const count = Math.max(0, Math.min(step, record.gods.length));
   for (let i = 0; i < count; i++) {
     const turn = E.current(next);
     const god = record.gods[i];
-    next = E.apply(next, { type: 'commit', side: turn.side, god: god, timeout: god == null, rev: next.rev }, roster, next.deadline || origin);
+    next = E.apply(next, { type: 'commit', side: turn.side, god: god, timeout: god == null, rev: next.rev }, gods, next.deadline || origin);
+    if (record.aspects && record.aspects[i] && turn.type === 'pick' && god) {
+      next = E.apply(next, { type: 'aspect', side: turn.side, god: god, on: true }, gods, next.deadline || origin);
+    }
   }
   return next;
+}
+function toggleAspect(side, godId) {
+  if (!canToggleAspect(side)) { toast('Only that team can change this aspect.'); return; }
+  const pick = state.actions.find(a => a.type === 'pick' && a.side === side && a.god === godId);
+  if (!pick || !byId[godId]?.aspect) return;
+  const action = { type: 'aspect', side: side, god: godId, on: !pick.aspect };
+  if (mode === 'local') {
+    try { state = E.apply(state, action, gods); }
+    catch (error) { toast(error.message); return; }
+    render();
+    return;
+  }
+  if (!connected) return toast('Reconnect before changing an aspect.');
+  send({ type: 'action', action: action });
 }
 function stopReplayTimer() { if (replayTimer) { clearInterval(replayTimer); replayTimer = null; } }
 function showReplayFrame(step, withSound) {
@@ -1250,6 +1277,12 @@ $('replayExit').onclick = () => { stopReplayTimer(); replayRecord = null; mode =
 $('copyDraftId').onclick = () => { if (currentDraftId) copyText(location.origin && location.protocol !== 'file:' ? location.href.split('?')[0].split('#')[0] + '?replay=' + encodeURIComponent(currentDraftId) : currentDraftId, 'Replay link copied.'); };
 $('replayThis').onclick = () => { if (currentDraftId) startReplay(currentDraftId); };
 document.addEventListener('keydown', event => { if (event.key === 'Escape') { $('historyModal').hidden = true; $('plansModal').hidden = true; } });
+document.addEventListener('click', event => {
+  const button = event.target.closest('[data-aspect]');
+  if (!button || button.disabled) return;
+  event.preventDefault();
+  toggleAspect(button.dataset.side, button.dataset.aspect);
+});
 
 function boot() {
   const replayQuery = new URLSearchParams(location.search).get('replay');

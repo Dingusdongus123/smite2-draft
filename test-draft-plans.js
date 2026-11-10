@@ -39,6 +39,13 @@ function unit() {
     ok(steps[0].side === 'Order' && steps[0].type === 'ban' && steps[1].side === 'Chaos', format + ' replay order follows the preset');
     ok(steps.filter(step => step.god === null).length === 1 && steps[3].god === null, format + ' timeout pass stays in position');
   }
+  const plain = Codec.encodeDraft(sample('standard'), ids);
+  ok(plain.startsWith('cd1.') && Codec.decodeDraft(plain, ids).aspects.every(on => on === false), 'A draft with no aspects stays a cd1 ID');
+  const marked = sample('standard');
+  marked.aspects = marked.gods.map((god, i) => i === 6);
+  const markedCode = Codec.encodeDraft(marked, ids);
+  const markedBack = Codec.decodeDraft(markedCode, ids);
+  ok(markedCode.startsWith('cd2.') && markedBack.aspects[6] === true && markedBack.aspects.filter(Boolean).length === 1 && markedBack.gods.join() === marked.gods.join(), 'A cd2 ID keeps which pick has an aspect');
   const link = 'https://smite2-draft.onrender.com/?replay=' + encodeURIComponent(Codec.encodeDraft(sample('standard'), ids));
   ok(Codec.decodeDraft(Codec.extractReplayCode(link), ids).names.Order === 'Renée', 'A replay link resolves to the same draft');
   assert.throws(() => Codec.encodeDraft({ format: 'standard', names: { Order: 'A', Chaos: 'B' }, gods: ['nut'] }, ids));
