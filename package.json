@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "python3 src/build.py",
-    "test": "python3 src/build.py && node test.js",
+    "test": "python3 src/build.py && node test.js && node test-map.js",
     "start": "node server/server.js"
   },
   "dependencies": {

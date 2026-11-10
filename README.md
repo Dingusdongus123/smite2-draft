@@ -4,7 +4,7 @@ A two-captain pick-and-ban draft for the gods of SMITE 2. Same-screen play works
 
 Fan-made. Not affiliated with Hi-Rez or Titan Forge.
 
-The site at [smite2-draft.onrender.com](https://smite2-draft.onrender.com) is the built `index.html`. Sources live in `src/`. The room server lives in `server/`.
+The site at [smite2-draft.onrender.com](https://smite2-draft.onrender.com) is the built `index.html`. Sources live in `src/`. The room server lives in `server/`. **Conquest map** in the top bar opens `map.html`, a separate strategy board (wards, drawings, PNG export). It does not use the room server.
 
 ## Play
 
