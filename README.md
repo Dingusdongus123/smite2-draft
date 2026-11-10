@@ -11,6 +11,8 @@ The site at [smite2-draft.onrender.com](https://smite2-draft.onrender.com) is th
 Open `index.html` (or the deployed site).
 
 - **Same screen** — two captains, one browser. No server.
+- **Draft history** — a finished draft gets an ID you can copy, replay, or paste. The ID itself holds the picks and bans, so it still works after the free room server sleeps.
+- **Draft plans** — a private priority list and target comps. During a draft, attach one to your side. If the other captain takes a god you wanted, the list re-ranks on this screen only.
 - **Create room** — you are Order. Copy the join link or read the room code to your rival.
 - **Join room** — you are Chaos. Paste the code, or open a link like `https://smite2-draft.onrender.com/?room=CODE`.
 

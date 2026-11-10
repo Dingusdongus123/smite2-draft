@@ -40,6 +40,14 @@ let presence = { Order: false, Chaos: false };
 let clockOffset = 0;
 let turnKey = '';
 let seenSummary = -1;
+let replayRecord = null;
+let replayStep = 0;
+let replayTimer = null;
+let assistPlanId = '';
+let assistSide = 'Order';
+let currentDraftId = '';
+const HISTORY_KEY = 'crystal-draft-history';
+const PLANS_KEY = 'crystal-draft-plans';
 let toastTimer = 0;
 let titleTimer = null;
 const BASE_TITLE = 'Crystal Draft · SMITE 2';
@@ -118,6 +126,7 @@ function play(kind) {
   else if (kind === 'your-turn') bell([{ freq: 988, dur: 0.12, type: 'sine', gain: 0.045 }, { freq: 1480, dur: 0.16, type: 'triangle', gain: 0.04 }], 0.05);
   else if (kind === 'join') bell([{ freq: 1046, dur: 0.12, type: 'sine', gain: 0.04 }, { freq: 1318, dur: 0.13, type: 'sine', gain: 0.035 }, { freq: 1568, dur: 0.18, type: 'triangle', gain: 0.03 }]);
   else if (kind === 'disconnect') bell([{ freq: 660, to: 340, dur: 0.22, type: 'triangle', gain: 0.045 }, { freq: 440, to: 220, dur: 0.26, type: 'sine', gain: 0.03 }], 0.02);
+  else if (kind === 'alert') bell([{ freq: 988, dur: 0.1, type: 'triangle', gain: 0.05 }, { freq: 740, dur: 0.16, type: 'sine', gain: 0.04 }], 0.04);
 }
 function stopFlash() {
   if (titleTimer) { clearInterval(titleTimer); titleTimer = null; }
@@ -366,6 +375,7 @@ function applyState(next, sentAt, reason) {
   if ((reason === 'action' || reason === 'timeout') && state.actions.length > prevLen) {
     const action = state.actions[state.actions.length - 1];
     play(action.type === 'ban' ? 'ban' : 'pick');
+    noteAssist(action);
   }
   cueTurn();
   render();
@@ -457,7 +467,7 @@ function renderTeam(side) {
   const panel = $(side.toLowerCase() + 'Team');
   const banCount = state.config.format === 'extended' ? 5 : 3;
   panel.classList.toggle('active', E.current(state)?.side === side && state.phase === 'draft');
-  panel.innerHTML = `<div class="teamhead"><div><h2>${side.toUpperCase()}</h2><div class="captain">${esc(state.names[side])}${mode !== 'local' && localSide() === side ? ' · YOU' : ''}</div></div><div class="sigil"><i></i></div></div>${Array.from({ length: 5 }, (_, i) => slotHTML(picks[i], i, side)).join('')}<div class="banlabel"><span>THE EXILED</span><span>${state.actions.filter(a => a.side === side && a.type === 'ban').length}/${banCount}</span></div><div class="bans">${bansHTML(side)}</div><div class="teamfoot"><span>${side === 'Order' ? 'FIRST PICK' : 'COUNTER PICK'}</span><span id="bank${side}">${Math.ceil(state.bank[side])}s BANK</span></div>`;
+  panel.innerHTML = `<div class="teamhead"><div><h2>${side.toUpperCase()}</h2><div class="captain">${esc(state.names[side])}${mode !== 'local' && mode !== 'replay' && localSide() === side ? ' · YOU' : ''}</div></div><div class="sigil"><i></i></div></div>${Array.from({ length: 5 }, (_, i) => slotHTML(picks[i], i, side)).join('')}<div class="banlabel"><span>THE EXILED</span><span>${state.actions.filter(a => a.side === side && a.type === 'ban').length}/${banCount}</span></div><div class="bans">${bansHTML(side)}</div><div class="teamfoot"><span>${side === 'Order' ? 'FIRST PICK' : 'COUNTER PICK'}</span><span id="bank${side}">${Math.ceil(state.bank[side])}s BANK</span></div>`;
 }
 function filteredGods() {
   const term = $('search').value.toLowerCase().trim();
@@ -491,11 +501,25 @@ function showPreview(id) {
   }
 }
 function renderSummary() {
-  if (state.phase !== 'summary') { $('summaryModal').hidden = true; return; }
+  if (state.phase !== 'summary' || mode === 'replay') { if (mode !== 'replay') $('summaryModal').hidden = true; return; }
   $('summaryTeams').innerHTML = ['Order', 'Chaos'].map(side => `<div class="summary-team"><h3>${side.toUpperCase()} · ${esc(state.names[side])}</h3>${state.actions.filter(a => a.side === side && a.type === 'pick').map((a, i) => slotHTML(a, i, side)).join('')}<div class="banlabel">BANS</div><div class="bans">${bansHTML(side)}</div></div>`).join('');
   $('restartBtn').disabled = mode === 'guest';
   $('restartBtn').textContent = mode === 'guest' ? 'Waiting for host' : 'Draft again →';
-  if (seenSummary !== state.rev) { $('summaryModal').hidden = false; seenSummary = state.rev; $('inspectBtn').focus(); }
+  if (seenSummary !== state.rev) {
+    try {
+      currentDraftId = DraftCodec.encodeDraft({
+        format: state.config.format,
+        names: state.names,
+        date: new Date().toISOString(),
+        gods: state.actions.map(a => a.god || null)
+      }, gods.map(g => g.id));
+      rememberHistory({ id: currentDraftId, format: state.config.format, names: state.names, date: new Date().toISOString().slice(0, 10) });
+    } catch (error) { currentDraftId = ''; toast(error.message); }
+    $('summaryModal').hidden = false;
+    seenSummary = state.rev;
+    $('inspectBtn').focus();
+  }
+  $('draftIdCode').textContent = currentDraftId;
 }
 function renderEnter() {
   if (state.phase !== 'lobby') return;
@@ -567,14 +591,14 @@ function render() {
   const lobby = state.phase === 'lobby';
   $('lobby').style.display = lobby ? 'grid' : 'none';
   $('draftHeader').style.display = lobby ? 'none' : 'flex';
-  $('sessionLabel').textContent = mode === 'local' ? 'Same-screen practice' : `Online draft · You are ${localSide()}`;
+  $('sessionLabel').textContent = mode === 'replay' ? 'Replay' : mode === 'local' ? 'Same-screen practice' : `Online draft · You are ${localSide()}`;
   $('roomBadge').textContent = room ? `ROOM ${room}` : 'LOCAL';
   const showCopy = !!room && mode !== 'local';
   const connecting = netPhase === 'waking' || netPhase === 'opening';
   $('copyLink').hidden = !showCopy;
   $('copyLinkDraft').hidden = !showCopy;
   $('cancelRoom').hidden = !(lobby && (showCopy || (connecting && mode !== 'local')));
-  $('reconnectBtn').hidden = mode === 'local' || connected || lobby;
+  $('reconnectBtn').hidden = mode === 'local' || mode === 'replay' || connected || lobby;
   $('phaseLabel').textContent = lobby ? 'Draft room · standby' : state.phase === 'summary' ? 'Draft complete' : state.phase === 'paused' ? 'Draft paused' : `${state.config.format === 'extended' ? 'Extended' : 'Standard'} · action ${state.step + 1}/${E.DRAFT_ORDERS[state.config.format].length}`;
   $('turnLabel').textContent = lobby ? 'Your strategy starts here.' : state.phase === 'summary' ? 'Both teams are locked in.' : state.phase === 'paused' ? 'The chamber is holding.' : `${turn.side.toUpperCase()} · ${turn.type === 'ban' ? 'BAN A GOD' : 'PICK A GOD'}`;
   $('progress').style.width = state.step / E.DRAFT_ORDERS[state.config.format].length * 100 + '%';
@@ -598,10 +622,13 @@ function render() {
   renderEnter();
   renderRoomLine();
   renderSummary();
+  renderReplay();
+  renderAssist();
   tick(false);
 }
 function tick(allowTimeout = true) {
   if (!mounted()) return;
+  if (mode === 'replay') { $('clock').textContent = String(replayStep).padStart(2, '0'); return; }
   const turn = E.current(state);
   if (!turn || !['draft', 'paused'].includes(state.phase)) {
     $('clock').textContent = '—';
@@ -647,6 +674,7 @@ function transition(action) {
   if (state.actions.length > prevLen) {
     const last = state.actions[state.actions.length - 1];
     play(last.type === 'ban' ? 'ban' : 'pick');
+    noteAssist(last);
   }
   render();
   return true;
@@ -692,6 +720,8 @@ function setTab(next) {
 }
 function resetLocal() {
   session += 1;
+  stopReplayTimer();
+  replayRecord = null;
   clearSeat();
   mode = 'local';
   mySide = null;
@@ -835,7 +865,256 @@ function heartbeat() {
   if (socket && socket.readyState === 1) send({ type: 'ping' });
   if (heartbeats % 9 === 0 && connected && typeof fetch === 'function') fetch(healthUrl(), { cache: 'no-store' }).catch(() => {});
 }
+function loadHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
+function rememberHistory(entry) {
+  const list = loadHistory().filter(item => item.id !== entry.id);
+  list.unshift(entry);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 40))); } catch { /* ignore */ }
+}
+function loadPlans() { try { const list = JSON.parse(localStorage.getItem(PLANS_KEY) || '[]'); return Array.isArray(list) ? list : []; } catch { return []; } }
+function savePlans(list) { try { localStorage.setItem(PLANS_KEY, JSON.stringify(list)); } catch { /* ignore */ } }
+function assistedSide() { return mode === 'host' ? 'Order' : mode === 'guest' ? 'Chaos' : assistSide; }
+function noteAssist(action) {
+  const plan = loadPlans().find(item => item.id === assistPlanId);
+  if (!plan || !action) return;
+  const advice = DraftCodec.advise(plan, [...E.used(state)], action, assistedSide(), gods);
+  if (!advice.alert) return;
+  toast(advice.alert.text);
+  play('alert');
+  if (document.hidden) flashTitle('Priority shifted · Crystal Draft');
+}
+function replayState(record, step) {
+  const roster = gods.map(g => ({ id: g.id }));
+  let next = E.create({ format: record.format, timeout: 'skip' });
+  next.names = { Order: record.names.Order, Chaos: record.names.Chaos };
+  const origin = Date.parse(record.date) || Date.UTC(2026, 0, 1);
+  next = E.apply(next, { type: 'start' }, roster, origin);
+  const count = Math.max(0, Math.min(step, record.gods.length));
+  for (let i = 0; i < count; i++) {
+    const turn = E.current(next);
+    const god = record.gods[i];
+    next = E.apply(next, { type: 'commit', side: turn.side, god: god, timeout: god == null, rev: next.rev }, roster, next.deadline || origin);
+  }
+  return next;
+}
+function stopReplayTimer() { if (replayTimer) { clearInterval(replayTimer); replayTimer = null; } }
+function showReplayFrame(step, withSound) {
+  if (!replayRecord) return;
+  const previous = state.actions.length;
+  replayStep = Math.max(0, Math.min(step, replayRecord.gods.length));
+  state = replayState(replayRecord, replayStep);
+  if (withSound && state.actions.length === previous + 1) play(state.actions.at(-1).type === 'ban' ? 'ban' : 'pick');
+  render();
+}
+function startReplay(code) {
+  let record;
+  try { record = DraftCodec.decodeDraft(DraftCodec.extractReplayCode(code), gods.map(g => g.id)); }
+  catch (error) { toast(error.message); return; }
+  stopReplayTimer();
+  replayRecord = record;
+  mode = 'replay';
+  room = '';
+  connected = false;
+  mySide = null;
+  selected = null;
+  preview = null;
+  $('summaryModal').hidden = true;
+  $('historyModal').hidden = true;
+  showReplayFrame(0, false);
+  toast('Replay ready. ' + record.names.Order + ' vs ' + record.names.Chaos + '.');
+}
+function renderReplay() {
+  $('replayBar').hidden = mode !== 'replay';
+  if (mode !== 'replay' || !replayRecord) return;
+  $('replayScrub').max = String(replayRecord.gods.length);
+  $('replayScrub').value = String(replayStep);
+  $('replayStep').textContent = replayStep + ' / ' + replayRecord.gods.length;
+  $('replayPlay').textContent = replayTimer ? 'Pause' : 'Play';
+}
+function renderHistory() {
+  const list = loadHistory();
+  $('historyList').innerHTML = list.length ? list.map(item => `<div class="history-row"><div><strong>${esc(item.names.Order)} vs ${esc(item.names.Chaos)}</strong><div class="muted">${esc(item.format)} · ${esc(item.date)}</div><code>${esc(item.id)}</code></div><div class="plan-tools"><button type="button" data-copy-draft="${esc(item.id)}">Copy</button><button type="button" data-watch="${esc(item.id)}">Replay</button><button type="button" data-forget="${esc(item.id)}">Delete</button></div></div>`).join('') : '<p class="muted">Finished drafts are listed here with their IDs.</p>';
+}
+function copyText(text, okMessage) {
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => toast(okMessage), () => toast(text));
+  else toast(text);
+}
+function previewGod(id) {
+  if (!byId[id] || E.used(state).has(id) || state.phase !== 'draft') return;
+  unlockAudio();
+  selected = id;
+  showPreview(id);
+  renderGrid();
+  const turn = E.current(state);
+  $('lockBtn').disabled = !canAct();
+  $('lockBtn').textContent = `${turn?.type === 'ban' ? 'Ban' : 'Pick'} ${byId[id].name}`;
+}
+let editingPlan = null;
+let planTarget = 'picks';
+function blankPlan() {
+  return { id: 'plan-' + Math.random().toString(36).slice(2, 10), name: 'New plan', picks: [], bans: [], comps: [] };
+}
+function planToText(ids) { return (ids || []).map(id => byId[id]?.name || id).join('\n'); }
+function readPlanForm() {
+  const picks = DraftCodec.parseGodList($('planPicks').value, gods);
+  const bans = DraftCodec.parseGodList($('planBans').value, gods);
+  const comps = [...$('planComps').querySelectorAll('[data-comp]')].map(block => ({
+    name: block.querySelector('.comp-name').value.trim().slice(0, 32) || 'Comp',
+    gods: [...block.querySelectorAll('.comp-god')].map(input => DraftCodec.parseGodList(input.value, gods).ids[0] || '')
+  }));
+  const unknown = [...picks.unknown, ...bans.unknown];
+  $('planParseNote').textContent = unknown.length ? 'Not matched: ' + unknown.join(', ') : 'Lists matched to the roster.';
+  return { id: editingPlan?.id || blankPlan().id, name: $('planName').value.trim().slice(0, 32) || 'Plan', picks: picks.ids, bans: bans.ids, comps: comps };
+}
+function renderPlanEditor() {
+  const plans = loadPlans();
+  $('planList').innerHTML = plans.map(plan => `<option value="${esc(plan.id)}">${esc(plan.name)}</option>`).join('') || '<option value="">No saved plans</option>';
+  if (!editingPlan && plans[0]) editingPlan = plans[0];
+  if (!editingPlan) editingPlan = blankPlan();
+  if (plans.some(plan => plan.id === editingPlan.id)) $('planList').value = editingPlan.id;
+  $('planName').value = editingPlan.name || '';
+  $('planPicks').value = planToText(editingPlan.picks);
+  $('planBans').value = planToText(editingPlan.bans);
+  $('planComps').innerHTML = (editingPlan.comps || []).map((comp, index) => `<div data-comp="${index}"><input class="comp-name" value="${esc(comp.name || 'Comp')}" aria-label="Comp name">${DraftCodec.ROLES.map((role, i) => `<label class="muted">${role}<input class="comp-god" value="${esc(comp.gods?.[i] ? (byId[comp.gods[i]]?.name || '') : '')}" aria-label="${role}"></label>`).join('')}</div>`).join('');
+  $('planParseNote').textContent = '';
+}
+function renderPlanHits() {
+  const term = $('planGodSearch').value.trim().toLowerCase();
+  const hits = gods.filter(g => !term || g.name.toLowerCase().includes(term)).slice(0, 8);
+  $('planGodHits').innerHTML = hits.map(g => `<button type="button" data-plan-god="${g.id}">${esc(g.name)}</button>`).join('');
+}
+function renderAssist() {
+  const show = mode !== 'replay' && ['draft', 'paused', 'summary'].includes(state.phase);
+  $('assist').hidden = !show;
+  if (!show) return;
+  const plans = loadPlans();
+  $('assistPlan').innerHTML = '<option value="">No plan attached</option>' + plans.map(plan => `<option value="${esc(plan.id)}">${esc(plan.name)}</option>`).join('');
+  if (plans.some(plan => plan.id === assistPlanId)) $('assistPlan').value = assistPlanId;
+  else assistPlanId = $('assistPlan').value || '';
+  $('assistSide').hidden = mode !== 'local';
+  if (mode === 'local') $('assistSide').value = assistSide;
+  const plan = plans.find(item => item.id === assistPlanId);
+  if (!plan) {
+    $('assistBody').innerHTML = '<p class="muted">Attach a plan to see your next ban and pick. It stays on this screen and is not sent to your rival.</p>';
+    return;
+  }
+  const advice = DraftCodec.advise(plan, [...E.used(state)], null, assistedSide(), gods);
+  const chip = item => `<button type="button" class="${item.out ? 'out' : ''}" data-suggest="${esc(item.id)}" ${item.out ? 'disabled' : ''}>${esc(item.name)}</button>`;
+  const comps = advice.comps.map(comp => `<div class="comp ${comp.broken ? 'broken' : comp.possible ? 'possible' : ''}"><strong>${esc(comp.name)}</strong> · ${comp.broken ? 'Broken' : comp.possible ? 'Still possible' : 'Incomplete'}<div>${comp.gods.map(g => `${esc(g.role)} ${g.out ? '<s>' + esc(g.name) + '</s>' : esc(g.name)}`).join(' · ')}</div></div>`).join('');
+  $('assistBody').innerHTML = `<div class="row"><button type="button" id="suggestBan" data-suggest="${esc(advice.nextBan || '')}" ${advice.nextBan ? '' : 'disabled'}>Next ban: ${advice.nextBan ? esc(byId[advice.nextBan].name) : '—'}</button><button type="button" id="suggestPick" data-suggest="${esc(advice.nextPick || '')}" ${advice.nextPick ? '' : 'disabled'}>Next pick: ${advice.nextPick ? esc(byId[advice.nextPick].name) : '—'}</button></div><div class="eyebrow">Pick priority</div><div class="plist" id="pickPriority">${advice.picks.map(chip).join('') || '<span class="muted">None</span>'}</div><div class="eyebrow">Ban priority</div><div class="plist">${advice.bans.map(chip).join('') || '<span class="muted">None</span>'}</div>${comps}`;
+}
+
+$('historyBtn').onclick = () => { renderHistory(); $('historyModal').hidden = false; };
+$('closeHistory').onclick = () => { $('historyModal').hidden = true; };
+$('historyList').onclick = event => {
+  const copy = event.target.closest('[data-copy-draft]');
+  const watch = event.target.closest('[data-watch]');
+  const forget = event.target.closest('[data-forget]');
+  if (copy) copyText(copy.dataset.copyDraft, 'Draft ID copied.');
+  if (watch) startReplay(watch.dataset.watch);
+  if (forget) {
+    const list = loadHistory().filter(item => item.id !== forget.dataset.forget);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); } catch { /* ignore */ }
+    renderHistory();
+  }
+};
+$('loadReplayBtn').onclick = () => startReplay($('replayPaste').value);
+$('plansBtn').onclick = () => { renderPlanEditor(); renderPlanHits(); $('plansModal').hidden = false; };
+$('closePlans').onclick = () => { $('plansModal').hidden = true; };
+$('planList').onchange = () => { editingPlan = loadPlans().find(plan => plan.id === $('planList').value) || blankPlan(); renderPlanEditor(); };
+$('planNew').onclick = () => { editingPlan = blankPlan(); renderPlanEditor(); };
+$('planSave').onclick = () => {
+  const plan = readPlanForm();
+  const list = loadPlans().filter(item => item.id !== plan.id);
+  list.unshift(plan);
+  savePlans(list);
+  editingPlan = plan;
+  renderPlanEditor();
+  toast('Plan saved on this browser.');
+};
+$('planDelete').onclick = () => {
+  if (!editingPlan) return;
+  savePlans(loadPlans().filter(plan => plan.id !== editingPlan.id));
+  editingPlan = null;
+  renderPlanEditor();
+};
+$('planCopy').onclick = () => {
+  const plan = readPlanForm();
+  copyText(DraftCodec.encodePlan(plan, gods.map(g => g.id)), 'Plan code copied.');
+};
+$('planCodeLoad').onclick = () => {
+  try {
+    const plan = DraftCodec.decodePlan($('planCodePaste').value, gods.map(g => g.id));
+    editingPlan = { ...blankPlan(), ...plan };
+    renderPlanEditor();
+    toast('Plan code loaded. Save it to keep it in the list.');
+  } catch (error) { toast(error.message); }
+};
+$('planExport').onclick = () => {
+  const blob = new Blob([JSON.stringify({ crystalPlans: 1, plans: loadPlans() }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'crystal-draft-plans.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+$('planImportBtn').onclick = () => $('planImportFile').click();
+$('planImportFile').onchange = () => {
+  const file = $('planImportFile').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(String(reader.result));
+      const plans = Array.isArray(data.plans) ? data.plans : Array.isArray(data) ? data : [];
+      savePlans(plans.filter(plan => plan && plan.name && (plan.picks || plan.bans || plan.comps)));
+      editingPlan = null;
+      renderPlanEditor();
+      toast('Plans imported.');
+    } catch { toast('That file is not a plan list.'); }
+  };
+  reader.readAsText(file);
+};
+$('planGodSearch').addEventListener('input', renderPlanHits);
+$('planPicks').addEventListener('focus', () => { planTarget = 'picks'; });
+$('planBans').addEventListener('focus', () => { planTarget = 'bans'; });
+$('planGodHits').onclick = event => {
+  const button = event.target.closest('[data-plan-god]');
+  if (!button) return;
+  const name = byId[button.dataset.planGod].name;
+  const field = planTarget === 'bans' ? $('planBans') : $('planPicks');
+  field.value = (field.value.trim() ? field.value.trim() + '\n' : '') + name;
+  $('planParseNote').textContent = name + ' added. Save the plan to keep it.';
+};
+$('assistPlan').onchange = () => { assistPlanId = $('assistPlan').value; renderAssist(); };
+$('assistSide').onchange = () => { assistSide = $('assistSide').value; renderAssist(); };
+$('assist').onclick = event => {
+  const button = event.target.closest('[data-suggest]');
+  if (!button || !button.dataset.suggest) return;
+  previewGod(button.dataset.suggest);
+};
+$('replayBack').onclick = () => { stopReplayTimer(); showReplayFrame(replayStep - 1, false); };
+$('replayFwd').onclick = () => { stopReplayTimer(); showReplayFrame(replayStep + 1, true); };
+$('replayScrub').oninput = () => { stopReplayTimer(); showReplayFrame(Number($('replayScrub').value), false); };
+$('replayPlay').onclick = () => {
+  if (replayTimer) { stopReplayTimer(); renderReplay(); return; }
+  if (replayStep >= replayRecord.gods.length) showReplayFrame(0, false);
+  const speed = Number($('replaySpeed').value) || 1;
+  replayTimer = setInterval(() => {
+    if (replayStep >= replayRecord.gods.length) { stopReplayTimer(); renderReplay(); return; }
+    showReplayFrame(replayStep + 1, true);
+  }, Math.round(900 / speed));
+  renderReplay();
+};
+$('replayExit').onclick = () => { stopReplayTimer(); replayRecord = null; mode = 'local'; state = E.create(); selected = null; preview = null; setTab('local'); render(); };
+$('copyDraftId').onclick = () => { if (currentDraftId) copyText(location.origin && location.protocol !== 'file:' ? location.href.split('?')[0].split('#')[0] + '?replay=' + encodeURIComponent(currentDraftId) : currentDraftId, 'Replay link copied.'); };
+$('replayThis').onclick = () => { if (currentDraftId) startReplay(currentDraftId); };
+document.addEventListener('keydown', event => { if (event.key === 'Escape') { $('historyModal').hidden = true; $('plansModal').hidden = true; } });
+
 function boot() {
+  const replayQuery = new URLSearchParams(location.search).get('replay');
+  if (replayQuery) { startReplay(replayQuery); prewarm(); return; }
   const code = codeFromLocation();
   const seat = loadSeat();
   if (seat?.token && seat.code && (!code || code === seat.code)) {
@@ -870,6 +1149,7 @@ window.CrystalDraft = {
   gods,
   engine: E,
   playedSounds: () => audio.played.slice(),
-  roomServer: ROOM_SERVER
+  roomServer: ROOM_SERVER,
+  codec: DraftCodec
 };
 })();

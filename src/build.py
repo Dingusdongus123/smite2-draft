@@ -19,12 +19,13 @@ html = (ROOT / 'template.html').read_text()
 replacements = {
     'GODS': json.dumps(gods, separators=(',', ':')),
     'ENGINE': (ROOT / 'engine.js').read_text(),
+    'CODEC': (ROOT / 'draft-codec.js').read_text(),
     'APP': (ROOT / 'app.js').read_text(),
 }
 for key, value in replacements.items():
     html = html.replace('__' + key + '__', value.replace('</script', '<\\/script'))
 
-if '__' in html and any(token in html for token in ('__GODS__', '__ENGINE__', '__APP__', '__PEERJS__')):
+if '__' in html and any(token in html for token in ('__GODS__', '__ENGINE__', '__CODEC__', '__APP__', '__PEERJS__')):
     raise SystemExit('build.py left an unreplaced template token')
 
 out = REPO / 'index.html'
