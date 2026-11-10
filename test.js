@@ -145,6 +145,28 @@ function unit() {
   s = E.apply(s, { type: 'commit', side: 'Order', god: null, timeout: true }, roster, 140002);
   ok(s.actions[0].god === null, 'Timeout pass supported');
   ok(E.DRAFT_ORDERS.standard.length === 16 && E.DRAFT_ORDERS.extended.length === 20, 'Draft order lengths unchanged');
+  let draft = E.create({ timeout: 'skip' });
+  draft = E.apply(draft, { type: 'start' }, roster, 1);
+  const aspectGod = roster.find(g => g.aspect);
+  const fillers = roster.filter(g => g.id !== aspectGod.id);
+  for (let i = 0; i < 6; i++) {
+    const turn = E.current(draft);
+    draft = E.apply(draft, { type: 'commit', side: turn.side, god: fillers[i].id, rev: draft.rev }, roster, 2);
+  }
+  const pickTurn = E.current(draft);
+  draft = E.apply(draft, { type: 'commit', side: pickTurn.side, god: aspectGod.id, rev: draft.rev }, roster, 3);
+  const later = E.current(draft);
+  draft = E.apply(draft, { type: 'commit', side: later.side, god: fillers[6].id, rev: draft.rev }, roster, 4);
+  draft = E.apply(draft, { type: 'aspect', side: pickTurn.side, god: aspectGod.id, on: true }, roster, 5);
+  ok(draft.actions.find(a => a.type === 'pick' && a.god === aspectGod.id).aspect === true, 'An aspect can be turned on for a pick');
+  const other = pickTurn.side === 'Order' ? 'Chaos' : 'Order';
+  assert.throws(() => E.apply(draft, { type: 'aspect', side: other, god: aspectGod.id, on: true }, roster, 6));
+  checks += 1;
+  console.log('PASS', 'The other team cannot mark that pick');
+  draft = E.apply(draft, { type: 'undo' }, roster, 7);
+  ok(draft.actions.find(a => a.type === 'pick' && a.god === aspectGod.id).aspect === true, 'Undo keeps an aspect on a pick that remains');
+  draft = E.apply(draft, { type: 'aspect', side: pickTurn.side, god: aspectGod.id, on: false }, roster, 8);
+  ok(draft.actions.find(a => a.type === 'pick' && a.god === aspectGod.id).aspect === false, 'An aspect can be turned off');
 }
 
 function local() {
@@ -194,6 +216,14 @@ function local() {
   ok(new Set(s.actions.map(a => a.god)).size === 16, 'No duplicate picks or bans');
   ok(['Order', 'Chaos'].every(side => s.actions.filter(a => a.side === side && a.type === 'pick').length === 5 && s.actions.filter(a => a.side === side && a.type === 'ban').length === 3), 'Standard team counts');
   ok(!el(d, 'summaryModal').hidden && el(d, 'summaryTeams').querySelectorAll('.ban.filled .banname').length === 6, 'Summary ban slots are named');
+  const aspectBtn = el(d, 'summaryTeams').querySelector('.aspect-btn');
+  ok(aspectBtn && aspectBtn.getAttribute('title').includes('Aspect of'), 'A picked god with an aspect shows the yellow toggle');
+  aspectBtn.click();
+  const toggled = get(d).actions.find(a => a.type === 'pick' && a.god === aspectBtn.dataset.aspect);
+  ok(toggled.aspect === true && el(d, 'summaryTeams').querySelector('[data-aspect="' + aspectBtn.dataset.aspect + '"]').classList.contains('on'), 'Clicking the toggle turns the aspect on');
+  const decodedAspect = d.window.CrystalDraft.codec.decodeDraft(el(d, 'draftIdCode').textContent, roster.map(g => g.id));
+  const aspectIndex = get(d).actions.findIndex(a => a.type === 'pick' && a.god === aspectBtn.dataset.aspect);
+  ok(el(d, 'draftIdCode').textContent.startsWith('cd2.') && decodedAspect.aspects[aspectIndex] === true, 'The summary ID records the aspect');
   ok(sounds(d).includes('pick'), 'Pick lock-in plays a distinct sound');
   click(d, 'inspectBtn');
   ok(el(d, 'summaryModal').hidden, 'Inspect final board');
@@ -437,6 +467,19 @@ async function serverProtocol() {
   ok(JSON.stringify(guestBag.latest()) === JSON.stringify(current), 'Guest ends on the server\'s final state');
   ok(JSON.stringify(host2Bag.latest()) === JSON.stringify(current), 'Reconnected host ends on the same final state');
   ok(new Set(current.actions.map(a => a.god)).size === 16, 'Server draft has no duplicate gods');
+  const aspectPick = current.actions.find(a => a.type === 'pick' && a.side === 'Order' && roster.some(g => g.id === a.god && g.aspect));
+  ok(aspectPick, 'The finished server draft has an Order pick with an aspect');
+  const aspectRev = current.rev + 1;
+  const hostAspect = once(orderSocket, m => m.type === 'state' && m.state.rev === aspectRev);
+  const guestAspect = once(guest, m => m.type === 'state' && m.state.rev === aspectRev);
+  orderSocket.send(JSON.stringify({ type: 'action', action: { type: 'aspect', side: 'Order', god: aspectPick.god, on: true } }));
+  const [hostAspectState, guestAspectState] = await Promise.all([hostAspect, guestAspect]);
+  ok(hostAspectState.state.actions.find(a => a.god === aspectPick.god && a.type === 'pick').aspect === true, 'The server stores the aspect on that pick');
+  ok(JSON.stringify(hostAspectState.state) === JSON.stringify(guestAspectState.state), 'Both captains receive the aspect toggle');
+  const stolen = once(guest, m => m.type === 'notice');
+  guest.send(JSON.stringify({ type: 'action', action: { type: 'aspect', side: 'Order', god: aspectPick.god, on: false } }));
+  ok(/own side/i.test((await stolen).message), 'The other captain cannot toggle that aspect');
+  ok(app.rooms.get(created.code).state.actions.find(a => a.god === aspectPick.god && a.type === 'pick').aspect === true, 'A rejected aspect toggle leaves the pick unchanged');
   void hostBag;
 
   orderSocket.close();

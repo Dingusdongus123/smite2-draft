@@ -15,7 +15,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Achilles%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Achilles",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of Prowess",
+      "description": "Combat Dodge can now be recast after striking a Jungle Monster or Boss, with Spear Strike gaining increased Scaling when forgoing your Armor. Radiant Glory no longer grants increased Protections or Crowd Control Reduction.",
+      "source": "https://wiki.smite2.com/w/Achilles",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "agni",
@@ -33,7 +39,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Agni%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Agni",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Combustion",
+      "description": "Your Basic Attacks now ignite enemies dealing damage over time and stacking 5 times. Flame Wave and Rain of Fire consume ignites dealing a burst of damage. Rain of Fire deals reduced damage.",
+      "source": "https://wiki.smite2.com/w/Agni",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ah-puch",
@@ -51,7 +63,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ah_Puch%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ah_Puch",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Death March",
+      "description": "Each decaying corpse you walk over reduces the Cooldown of Fleeting Breath instead of the Cooldown of Corpse Explosion. Corpse Explosion becomes Wraith Call, which haunts enemy gods dealing bonus damage and significantly debuffing targets on ability hits. Empty The Crypts deals less damage per tick but Slows haunted enemy gods inside the field.",
+      "source": "https://wiki.smite2.com/w/Ah_Puch",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "aladdin",
@@ -88,7 +106,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Amaterasu%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Amaterasu",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Valor",
+      "description": "Divine Presence now defaults to Red Buff, and when activated you gain Movement Speed, Haste, and Basic Attack Power in addition to the original effects. It no longer alternates to Gold Buff, or Heals you when activated.",
+      "source": "https://wiki.smite2.com/w/Amaterasu",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "anhur",
@@ -106,7 +130,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Anhur%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Anhur",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of Pride",
+      "description": "Enfeeble no longer Debuffs enemies but dealing damage to the same enemy god with Basic Attacks provides you up to 100% bonus Attack Speed.",
+      "source": "https://wiki.smite2.com/w/Anhur",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "anubis",
@@ -141,7 +171,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Aphrodite%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Aphrodite",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Heartbreak",
+      "description": "You can no longer Link to allies with Kiss. Kiss Charms enemies it hits and Links to them. Links start to break at a shorter distance. Back Off! deals Magical Damage in a circle around all Linked enemies. Love Birds deals Magical Damage equal to its Heal to all Linked enemies. Undying Love no longer grants damage immunity, but fires a kiss projectile at each enemy within 8m, dealing and Linking to them.",
+      "source": "https://wiki.smite2.com/w/Aphrodite",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "apollo",
@@ -158,7 +194,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Apollo%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Apollo",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of Harmony",
+      "description": "Audacity now grants free So Beautiful casts but no Attack Speed. So Beautiful scales with item Health, lowers enemy Attack Speed, and grants nearby allies Attack Speed on God or Boss hits, but deals less Base Damage. Serenade now shields nearby allies and Protections while it holds. Buffing an ally grants an Audacity stack.",
+      "source": "https://wiki.smite2.com/w/Apollo",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ares",
@@ -176,7 +218,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ares%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ares",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Reverberation",
+      "description": "Blessed Armaments now only applies to self. Call to Arms no longer grants Protections, Regen, or affects allies. Instead, Ares empowers his Shield for his next Basic Attack, gaining Movement Speed, stunning the target and spreading damage to nearby enemies. No Escape no longer pulls or stuns but deals increased damage and roots.",
+      "source": "https://wiki.smite2.com/w/Ares",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "artemis",
@@ -194,7 +242,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Artemis%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Artemis",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of the Wild",
+      "description": "Transgressor's Fate no longer roots or cripples gods but can now target minions. Triggered traps now also heal Artemis and deal damage to enemies in a larger area.",
+      "source": "https://wiki.smite2.com/w/Artemis",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "artio",
@@ -212,7 +266,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Artio%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Artio",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of the Denmother",
+      "description": "Artio can only change stances inside the fountain. Upon leaving fountain, her abilities are enhanced and her ultimate changes based on her form.",
+      "source": "https://wiki.smite2.com/w/Artio",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "athena",
@@ -230,7 +290,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Athena%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Athena",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of War",
+      "description": "Defender of Olympus now targets visible enemy gods instead of allies, dealing no landing damage but causing the enemy to take increased damage while Athena is channeling. Shield Wall no longer slows but the second strike grants Reach.",
+      "source": "https://wiki.smite2.com/w/Athena",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "atlas",
@@ -248,7 +314,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Atlas%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Atlas",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of the Unburdened",
+      "description": "Your basic attack now throws your astrolabe. Unburden is used to reposition the astrolabe. Gravity no longer pulls when the astrolabe is deployed. Kinetic Charge can be used to kick the astrolabe forward. Your passive now reduces the cooldown of Gamma-Ray Burst.",
+      "source": "https://wiki.smite2.com/w/Atlas",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "awilix",
@@ -284,7 +356,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Bacchus%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Bacchus",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Revelry",
+      "description": "After using Chug, your inhand attacks cleave and deal bonus damage scaling with Strength instead of Protections, for a short duration.",
+      "source": "https://wiki.smite2.com/w/Bacchus",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "baron-samedi",
@@ -302,7 +380,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Baron_Samedi%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Baron_Samedi",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Hysteria",
+      "description": "Hysteria applied over max deals damage. Max Hysteria no longer reduces damage. Consign Spirits only heals Baron. Vivid Gaze bonus now grants Hysteria over time, but no debuff. Wrap It Up explosion and DoT apply Bonus Hysteria, but the explosion no longer Mesmerizes. Your personal Brew can be thrown every 20s.",
+      "source": "https://wiki.smite2.com/w/Baron_Samedi",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "bastet",
@@ -320,7 +404,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Bastet%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Bastet",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of the Watchful Pride",
+      "description": "Pounce can no longer be activated again to return you to your starting location; hitting an enemy god with it grants Protections to nearby allies. Razor Whip deals less damage but Disarms bleeding enemies. Ensnaring Claw Stuns instead of Rooting. Cat Call becomes Huntress of Bast.",
+      "source": "https://wiki.smite2.com/w/Bastet",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "bellona",
@@ -339,7 +429,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Bellona%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Bellona",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Vindication",
+      "description": "Bludgeon no longer deals bonus Final Slam Damage but whenever you gain Block stacks with Sword and Shield or gain Healing from Scourge, nearby allied gods also gain those benefits.",
+      "source": "https://wiki.smite2.com/w/Bellona",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "cabrakan",
@@ -357,7 +453,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Cabrakan%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Cabrakan",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of the Rotund Jotunn",
+      "description": "Seismic Crush Stealths you and Slows enemies instead of Stunning. Refraction Shield stacks energy by dealing damage and deals bonus damage instead of a Stun. Tremors spawns a vision dealing damage and Slowing on the final hit. You teleport to a location before casting Tectonic Shift, each Wall having less Health.",
+      "source": "https://wiki.smite2.com/w/Cabrakan",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "cerberus",
@@ -375,7 +477,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Cerberus%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Cerberus",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Souls",
+      "description": "Ghastly Breath ticks an additional time for every 3 god souls you have killed but souls no longer heal. Stygian Torment now only knocks up targets.",
+      "source": "https://wiki.smite2.com/w/Cerberus",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "cernunnos",
@@ -394,7 +502,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Cernunnos%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Cernunnos",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of Strife",
+      "description": "Your Basic Attacks are now melee and deal increased damage, cleave, and apply stronger Shifter of Seasons effects to all enemies hit. In addition, Horn Charge's cooldown is reduced when hitting a god or Jungle Monster and applies Shifter of Seasons.",
+      "source": "https://wiki.smite2.com/w/Cernunnos",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "chaac",
@@ -413,7 +527,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Chaac%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Chaac",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Fulmination",
+      "description": "Rain Dance no longer heals or grants Overflow stacks but damages enemies in the area instead. Torrent max stacks are decreased.",
+      "source": "https://wiki.smite2.com/w/Chaac",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "charon",
@@ -431,7 +551,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Charon%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Charon",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of the Tollkeeper",
+      "description": "Passive coins are pulled to you while in assist range. Damnation no longer applies an attack speed slow or Shield. Instead, it summons a soul on enemy gods hit that deals damage when you hit them. Once for attacks, three times for abilities. Spectral Surge refreshes the duration of the soul but does not Silence.",
+      "source": "https://wiki.smite2.com/w/Charon",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "chiron",
@@ -450,7 +576,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Chiron%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Chiron",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Heroic Tutor",
+      "description": "Target Mark now only applies to one target, and you passively copy 10% of damage done to that target, dealing it again as Physical Damage. Target Mark can no longer apply to lane minions. Training Exercise boosts Allies' Strength and Intelligence when it hits or cleanses them. Centaurus has less scaling, but slows enemies, and when it hits allies, grants them Attack Speed, Shield and applies Herbal Medicine's buff.",
+      "source": "https://wiki.smite2.com/w/Chiron",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "chronos",
@@ -467,7 +599,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Chronos%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Chronos",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Relativity",
+      "description": "Time lord no longer grants Intelligence but instead creates a persistent Time Field around you. Allies in your Time Field gain bonuses when you use your other abilities.",
+      "source": "https://wiki.smite2.com/w/Chronos",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "cu-chulainn",
@@ -484,7 +622,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Cu_Chulainn%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Cu_Chulainn",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of the Warped",
+      "description": "Start the game as Berserk. Vent Anger now costs Rage when Berserk. After reaching 100 Rage, become Warped gaining massive power and losing Rage every .5s. After reaching 0 Rage transform back to Human form with reduced Protections and Damage.",
+      "source": "https://wiki.smite2.com/w/Cu_Chulainn",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "cupid",
@@ -502,7 +646,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Cupid%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Cupid",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Love",
+      "description": "Heart Bomb's damage is decreased but the enemy hit has reduced Attack Speed and the explosion area heals allies. At 8 stacks of Lovestruck, allies also gain a Health Shield.",
+      "source": "https://wiki.smite2.com/w/Cupid",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "da-ji",
@@ -519,7 +669,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Da_Ji%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Da_Ji",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Ferocity",
+      "description": "Horrible Burns no longer burns but provides Lifesteal and lasts for a short duration. One Thousand Cuts fires 2 swings, increasing at Attack Speed thresholds and deals Attack damage. Trickster Spirit does less damage but provides an Attack Speed buff.",
+      "source": "https://wiki.smite2.com/w/Da_Ji",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "danzaburou",
@@ -538,7 +694,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Danzaburou%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Danzaburou",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of Fellowship",
+      "description": "Alluring Spirits no longer throws out a sake bottle but instead spawns 2 Clones. All of your Clones deal more damage and take less damage.",
+      "source": "https://wiki.smite2.com/w/Danzaburou",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "discordia",
@@ -556,7 +718,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Discordia%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Discordia",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Gilded Victor",
+      "description": "Contest of Gods only provides you extra Attack Damage from Intelligence. Unruly Magic does not explode but returns back, dealing damage and providing a stack causing your next Attacks to explode. Erratic Behavior no longer creates a field or Stealth but Attack Speed and Attack Damage. Golden Apple of Discord is faster and does not spread.",
+      "source": "https://wiki.smite2.com/w/Discordia",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "eset",
@@ -574,7 +742,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Eset%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Eset",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Lifewarden",
+      "description": "Dispel Magic no longer requires an enemy god hit to shield allies and now applies Transference to all allies it shields. Wing Gust has reduced damage scaling, but applies a movement speed aura to allies, and when its projectiles hit enemies, all allies with Transference are healed.",
+      "source": "https://wiki.smite2.com/w/Eset",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "fenrir",
@@ -592,7 +766,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Fenrir%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Fenrir",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Loyalty",
+      "description": "Unchained gains additional Protection Scaling and Stun Duration. Seething Howl applies to all allies in the area around him, and their Lifesteal Heals Fenrir, but the Strength it provides is decreased. Brutalize deals less damage but applies a stacking Slow, provides increased Protections, and the Protections persists afterwards.",
+      "source": "https://wiki.smite2.com/w/Fenrir",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ganesha",
@@ -610,7 +790,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ganesha_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ganesha",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of the Triumphant",
+      "description": "Ohm no longer silences but damages enemies and provides Movement Speed. Turn of Fate’s mark only procs when you hit the marked enemy with an ability. You no longer bestow kills to allies but each god kill provides permanent Cooldown Rate. Dharmic Pillars no longer slows and has a longer Cooldown.",
+      "source": "https://wiki.smite2.com/w/Ganesha",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "geb",
@@ -628,7 +814,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Geb%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Geb",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Calamity",
+      "description": "Geb's attacks are ranged, travel slowly, and pierce with damage falloff. Shockwave deals circular damage, Crits, triggers on-hits, and grants Attack Speed on god hit. Stone Shield is self-only and buffs attack damage. Cataclysm causes Knockback rather than a Stun. -7.5% Base Health, -5% Base Protections.",
+      "source": "https://wiki.smite2.com/w/Geb",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "gilgamesh",
@@ -646,7 +838,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Gilgamesh%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Gilgamesh",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of Shamash",
+      "description": "Winds of Shamash is no longer an ultimate. Place a wind wall that transforms once with your next ability: ignites from Sun-forged Scimitar, solidifies from Drop Kick, or launches allies from Hero's Advance. It can only transform once, granting you Attack Speed, Tenacity, or Pathfinding until its next transform.",
+      "source": "https://wiki.smite2.com/w/Gilgamesh",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "guan-yu",
@@ -664,7 +862,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Guan_Yu%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Guan_Yu",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of the General",
+      "description": "Battle Fervor now provides Intelligence instead of Attack Speed. Conviction now applies an additional Heal over Time and will share Protections from Taolu Assault. However, Guan Yu loses all Strength scaling and reduced Intelligence damage scaling.",
+      "source": "https://wiki.smite2.com/w/Guan_Yu",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "hachiman",
@@ -682,7 +886,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Hachiman%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Hachiman",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of the Steel Wind",
+      "description": "Eagle Eye only has 1 charge but hitting an enemy allows you to dash to them and deliver a sweep attack. After arriving your Interact becomes a backward dash. Basic Attacks have falloff damage.",
+      "source": "https://wiki.smite2.com/w/Hachiman",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "hades",
@@ -718,7 +928,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Hecate%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Hecate",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Ruin",
+      "description": "Spell Eater can no longer be refired but instead reduces enemy ability damage in the area. Additionally, each time an enemy ability is cast a projectile lands and explodes at their location. Its Cooldown is increased.",
+      "source": "https://wiki.smite2.com/w/Hecate",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "hel",
@@ -736,7 +952,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Hel%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Hel",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Divergence",
+      "description": "Deal damage or heal allies to fully attune to your Dark or Light stance, locking yourself to that form for the remainder of the match. While attuned, gain enhanced abilities and an new ultimate.",
+      "source": "https://wiki.smite2.com/w/Hel",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "hercules",
@@ -755,7 +977,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Hercules%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Hercules",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of Preservation",
+      "description": "Mitigate Wounds no longer Heals based on damage taken or provides Attack Speed. Instead you gain Plating on use and a stack when you or nearby allied gods take damage from Basic Attacks and when the ability ends, stacks are expended to Heal nearby allied gods. Apotheosis empowered state no longer grants strength or cleaving basic attacks but provides the buff to yourself and nearby allies with a reduced duration. +7.5% Base Health.",
+      "source": "https://wiki.smite2.com/w/Hercules",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "horus",
@@ -773,7 +1001,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Horus%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Horus",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of the Falcon",
+      "description": "Fracture no longer stuns but deals increased damage on the cleave. Protector's Surge has a reduced range but now can target a location spawning a wind sprite or targeting an enemy dealing damage and granting a gust attack. To The Skies! no longer teleports allies but deals bonus damage in the center.",
+      "source": "https://wiki.smite2.com/w/Horus",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "hou-yi",
@@ -790,7 +1024,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Hou_Yi%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Hou_Yi",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of the Mark",
+      "description": "Basic Attacks now ricochet, dealing bonus damage to gods per bounce. Bounced Basic Attacks cannot damage structures. Ricochet no longer bounces or stuns; it applies Mark of the Golden Crow on its first hit. If already marked, the mark spreads. Basic Attacks hitting marked targets bounce to a nearby enemy.",
+      "source": "https://wiki.smite2.com/w/Hou_Yi",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "hua-mulan",
@@ -827,7 +1067,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Hun_Batz%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Hun_Batz",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Disruption",
+      "description": "Infused Strikes Slow gods hit by them, but do not deal bonus damage or provide the stacking Strength buff. Overhand Smash Stuns gods hit by it, but deals reduced damage. Sacred Monkey has reduced Scaling.",
+      "source": "https://wiki.smite2.com/w/Hun_Batz",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ishtar",
@@ -845,7 +1091,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ishtar%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ishtar",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of the Passionate Storm",
+      "description": "Your Spread Shot cone is always active on your Attacks. Imbue Arrows no longer changes stance; it grants Attack Speed and lets you build Storm's Kiss whenever you hit a target with an Attack while Imbue is active. Rolling Thunder now grants you a small Movement Speed bonus per strike. Jolt consumes Storm's Kiss stacks on hit; at 8 or more stacks, the arrow you fire after the backflip deals bonus damage, and at 15 or more stacks the Rooted target explodes for bonus area Physical Damage over double the area when you land.",
+      "source": "https://wiki.smite2.com/w/Ishtar",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ix-chel",
@@ -862,7 +1114,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ix_Chel%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ix_Chel",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Mother's Light",
+      "description": "Gleaming Blast and the Great End no longer deal damage. Gleaming Blast now shields ally gods and slows enemy gods. Lunar Invocation and the Great End have greatly increased healing.",
+      "source": "https://wiki.smite2.com/w/Ix_Chel",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "izanami",
@@ -879,7 +1137,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Izanami%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Izanami",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of the Sickle",
+      "description": "Your basic attacks no longer pierce. Sickle Storm deals damage over time in an area and wounds enemy gods. Your Basic Attack and other abilities burst all wound stacks to deal bonus damage.",
+      "source": "https://wiki.smite2.com/w/Izanami",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "janus",
@@ -932,7 +1196,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Jormungandr%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Jormungandr",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of the Unyielding",
+      "description": "Toxic clouds do not deal tick damage but allied gods within them gain Damage Reduction. Within them, you do not gain Cooling but lower cooldown for Venomous Haze. Consuming Bellow does not deal bonus damage but allies gain INT and STR. Submerge Knockup height is increased.",
+      "source": "https://wiki.smite2.com/w/Jormungandr",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "kali",
@@ -949,7 +1219,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Kali%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Kali",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Unbound Destruction",
+      "description": "Kali's Basics are ranged. Rupture procs at 5 stacks to deal damage & heal her. Incense doesn't stun or proc Rupture but knocks back & applies Rupture. Destruction doesn't damage, prevent death, or give immunities but gives stats, has a lower cooldown, resets cooldown on Mark kills, makes her Basics apply 2 Rupture stacks & pierce.",
+      "source": "https://wiki.smite2.com/w/Kali",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "khepri",
@@ -967,7 +1243,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Khepri%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Khepri",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Laceration",
+      "description": "Abduct no longer Pulls enemy gods but Roots them in place with you, dealing constant Basic Attack Damage for the duration. No longer gain Protections from Abduct.",
+      "source": "https://wiki.smite2.com/w/Khepri",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "kukulkan",
@@ -985,7 +1267,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Kukulkan%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Kukulkan",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Squall",
+      "description": "You gain Mana from Jungle monster kills and god kills and assists. Zephyr has a shorter range but fires 3 projectiles. Slipstream is always a dash and steals protections. Whirlwind attaches to you and explodes in a blast that knocks back enemies.",
+      "source": "https://wiki.smite2.com/w/Kukulkan",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "kuzenbo",
@@ -1002,7 +1290,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Kuzenbo%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Kuzenbo",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Spirits",
+      "description": "Water Bowl no longer provides Mitigation but instead causes you to spawn orbiting Kappa Spirits. Shell Spikes no longer reflects damage but instead causes you to throw Spirit Kappas.",
+      "source": "https://wiki.smite2.com/w/Kuzenbo",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "loki",
@@ -1020,7 +1314,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Loki%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Loki",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Agony",
+      "description": "Vanish no longer grants Stealth; its attack now inflicts Blind instead of Bleed. Agonizing Visions can be cast on allies, providing damage mitigation while slowing enemies. Behind You now deals bonus damage scaling with your Health and Protections rather than its percentage increase.",
+      "source": "https://wiki.smite2.com/w/Loki",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "medusa",
@@ -1072,7 +1372,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Merlin%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Merlin",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Pandemonium",
+      "description": "Elemental Mastery has a reduced cooldown and each time it is used, a random Stance is selected with 2 random primary abilities, Flicker will always persist. Using Elemental Mastery provides an Intelligence buff for a short duration.",
+      "source": "https://wiki.smite2.com/w/Merlin",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "mordred",
@@ -1091,7 +1397,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Mordred%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Mordred",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Rage",
+      "description": "Basic attacks while Bloodrage is active no longer provide bonus Protections or Attack Speed but instead your non-ultimate and non-passive ability cooldowns are lowered. Additionally Shoulder Charge deals more damage if it has hit an enemy god recently.",
+      "source": "https://wiki.smite2.com/w/Mordred",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "morgan-le-fay",
@@ -1109,7 +1421,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Morgan_Le_Fay%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Morgan_Le_Fay",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Cursed Crown",
+      "description": "Your Basic Attacks are now melee. You gain Wrath over time and when you deal damage. Consuming Power has two levels that can be used at 40 and 80 Wrath. Sigil Mastery fires all 3 Sigils simultaneously. Shroud of Wildfire Attack explosions deal a percentage of your Max Health as damage.",
+      "source": "https://wiki.smite2.com/w/Morgan_Le_Fay",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ne-zha",
@@ -1127,7 +1445,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ne_Zha%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ne_Zha",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Righteous Flame",
+      "description": "Righteous Spirit no longer stacks on hitting enemies. Taking damage charges Righteous Spirit to provide a Heal over Time. Ring Toss can bounce to allies for a Movement and Attack Speed boost. Flaming Spear is now a damaging AoE attack that buffs Ne Zha's Attacks and consumes Righteous Spirit to burst heal.",
+      "source": "https://wiki.smite2.com/w/Ne_Zha",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "neith",
@@ -1146,7 +1470,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Neith%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Neith",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of Wind",
+      "description": "Broken Weave explosions no longer Root enemies and the Buff has a reduced duration however the Attack Speed gained is much higher. Additionally using World Weaver provides stacks of Broken Weave.",
+      "source": "https://wiki.smite2.com/w/Neith",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "nemesis",
@@ -1163,7 +1493,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Nemesis%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Nemesis",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Justice",
+      "description": "Divine Judgement no longer does damage in an area or steals Protections, but instead moves your and the enemy god’s current Health 75% of the way toward each other, as long as you have less Health than the target.",
+      "source": "https://wiki.smite2.com/w/Nemesis",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "nike",
@@ -1181,7 +1517,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Nike%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Nike",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Victorious Conquest",
+      "description": "Laurels are granted only to you. At 3 Laurels, your next ability deals bonus Physical Damage scaling with Strength and consumes them. Barrier Formation no longer channels; it travels forward 9m, lingers 1s, and Knocks Up enemies who touch it.Valiant Leap no longer Knocks Up. Sentinel of Zeus no longer grants a Shield; it grants full Laurels, and ability hits do not consume Laurels while the buff is active.",
+      "source": "https://wiki.smite2.com/w/Nike",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "nox",
@@ -1198,7 +1540,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Nox%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Nox",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Silent Night",
+      "description": "Flame of the Night provides Dampening and a Magical Shield. Shadow Lock scales with Magical Protections. Siphon Darkness Silences and Slows for its duration but deals no damage. Shadow Step provides a Magical Shield to Nox and an ally, fears when exiting an ally, but does no damage. Night Terror does less damage but spawns a dome of darkness on hit which Weakens and Slows enemies inside.",
+      "source": "https://wiki.smite2.com/w/Nox",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "nu-wa",
@@ -1216,7 +1564,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Nu_Wa%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Nu_Wa",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Shining Mist",
+      "description": "Mysterious Fog travels slightly before stopping, allowing you to fire Attacks within it and remain Stealthed. Shining Metal and Fire Shards scale with Attack Power, and procs Attack Item Effects. Attacks reduce the Cooldown of Shining Metal. Additionally Strength of Fire also provides Attack Speed.",
+      "source": "https://wiki.smite2.com/w/Nu_Wa",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "nut",
@@ -1235,7 +1589,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Nut%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Nut",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of the Cosmos",
+      "description": "Flux becomes Cosmic Flux (Mitigation, decays). Decaying past 10 stacks Heals allies. Base Damage +10%, Scaling -25%. Convergence grants a version of itself to allies on God hit. Crashing Comet Stuns and Slows, but takes longer to land. Warp grants CC Immunity to self and 1 nearby ally. -12.5% Attack Damage.",
+      "source": "https://wiki.smite2.com/w/Nut",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "odin",
@@ -1271,7 +1631,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Osiris%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Osiris",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of the Fragmented",
+      "description": "Abilities now scale with Intelligence only. Fragments are lost passively, on casts, and on ability god hits. Osiris gains +% Damage Dealt or Damage Mitigated based on how whole he is. Sickle Strike has no cooldown, costs 4 Fragments. Spirit Flail consumes Sickle Strike for bonus damage but no slow. Lord of the Afterlife summons a slowing, damage-dealing specter.",
+      "source": "https://wiki.smite2.com/w/Osiris",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "pele",
@@ -1289,7 +1655,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Pele%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Pele",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Obsidian",
+      "description": "You only gain Fuel from Pyroclast and when damaged by enemies instead of over time. Magma Rush can no longer be refired but now provides Healing. Additionally Everlasting Flame now provides Protections instead of Strength and Lifesteal, and Volcanic Lightning damage no longer has Strength Scaling.",
+      "source": "https://wiki.smite2.com/w/Pele",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "poseidon",
@@ -1307,7 +1679,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Poseidon%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Poseidon",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Trident",
+      "description": "Poseidon’s basic attacks always fire side waves. Trident no longer affects Tidal Surge but can be activated to focus the side waves, causing them to pierce enemies, and both abilities deal extra basic attack damage.",
+      "source": "https://wiki.smite2.com/w/Poseidon",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "princess-bari",
@@ -1342,7 +1720,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ra%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ra",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Thermotherapy",
+      "description": "Solar Blessing and Searing Pain only deal base damage with no scaling, Celestial Beam deals reduced damage, and Divine Light no longer grants Solar Rays. In return, Celestial Beam grants Speed of Light to allies, Solar Blessing can be placed on allied gods attaching to them, and Searing Pain Heals allies hit.",
+      "source": "https://wiki.smite2.com/w/Ra",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "rama",
@@ -1360,7 +1744,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Rama%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Rama",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of Precision",
+      "description": "Astral Strike is always active, but you have severely decreased Attack Speed and no longer regen Astral Arrows. When out of Astral Arrows, reload. While Infinite Arrows is active, Astral Arrows are not consumed.",
+      "source": "https://wiki.smite2.com/w/Rama",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ratatoskr",
@@ -1378,7 +1768,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ratatoskr%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ratatoskr",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of the Thickbark",
+      "description": "Your tier 3 Acorn effects change. Briskberry causes Dart to knockback enemy gods, marking them to explode. Ashwhorl provides Flurry 2 charges, protections and healing. Thistlethorn causes Acorn Blast to fire 5 projectiles and debuffs enemies.",
+      "source": "https://wiki.smite2.com/w/Ratatoskr",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ravana",
@@ -1396,7 +1792,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Ravana%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Ravana",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of the Rakshasa King",
+      "description": "Combo now stacks up to 999. Mystic Rush is replaced by an activator that lets you fire an enhanced version of your regular abilities. Using an enhanced ability consumes all Combo, grants a Shield equal to a percentage of your max Health, and if you have 50 or more Combo, a buff based on how much Combo was consumed.",
+      "source": "https://wiki.smite2.com/w/Ravana",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "scylla",
@@ -1414,7 +1816,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Scylla_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Scylla",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of the Devourer",
+      "description": "Your abilities give Mana on damaging enemies instead of spending. I'm a Monster can be used when at full Mana, using it all. It no longer provides Movement Speed, but can be fired 3 times and damage scales only from Max Mana. Its stacks provide max Mana and at max rank you gain bonus Mana. Sentinel's Empowered attack also scales with Max Mana, but no longer Cooldown Reduces itself.",
+      "source": "https://wiki.smite2.com/w/Scylla",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "sobek",
@@ -1432,7 +1840,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Sobek%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Sobek",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Prey",
+      "description": "Charge Prey now passes through all targets, knocks them forward, and has bonus scaling. Tail Whip no longer knocks back but gains Strength Scaling. Sickening Strike deals increased damage against Jungle Monsters and the cooldown reduction now triggers off Jungle Monsters. Blessing of the Nile grants Attack Damage.",
+      "source": "https://wiki.smite2.com/w/Sobek",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "sol",
@@ -1451,7 +1865,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Sol%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Sol",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Conflagration",
+      "description": "Sol's Heat provides Intelligence and Ability Damage, but no longer provides Strength, Attack Speed, and Basic Attack Damage. Sol erupts and deals damage around her when becomes immune in Disapparate.",
+      "source": "https://wiki.smite2.com/w/Sol",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "sun-wukong",
@@ -1469,7 +1889,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Sun_Wukong%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Sun_Wukong",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of Transformation",
+      "description": "72 Transformations has a reduced Cooldown and locks your animal form until Somersault Cloud is used. Locking in Ox form causes Master’s Will to Knockup, Tiger form provides stacking Attack Speed on hits of The Magic Cudgel and Eagle form causes your other two non-ultimate abilities to have a reduced Cooldown.",
+      "source": "https://wiki.smite2.com/w/Sun_Wukong",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "susano",
@@ -1487,7 +1913,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Susano%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Susano",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of the Storm Front",
+      "description": "Storm's Edge deals reduced damage but applies additional effects. Jet stream now attaches to friendly Gods, granting Critical Strike Chance and Movement Speed. Typhoon no longer deals damage over time but Vortexes enemies.",
+      "source": "https://wiki.smite2.com/w/Susano",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "sylvanus",
@@ -1505,7 +1937,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Sylvanus%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Sylvanus",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Grover's Wrath",
+      "description": "Attacks: +15% damage to targets debuffed by Sylvanus. Wisp’s Heal, Protections, and Ultimate Knockup reduced by 40%. Nature’s Grasp tethers, dealing damage, slowing, and granting Sylvanus Haste. Gain Anger (+Attack Speed) when Verdant Growth/Ally dies; +2 on Ultimate cast. At 4 stacks, Enrage: +Attack Speed and a free Wisps or Nature’s Grasp cast.",
+      "source": "https://wiki.smite2.com/w/Sylvanus",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "thanatos",
@@ -1523,7 +1961,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Thanatos%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Thanatos",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Reaping",
+      "description": "Harvester of Souls no longer Heals Thanatos but provides permanent Max Health. Additionally Soul Reap deals bonus damage and Heals Thanatos based on his Max Health.",
+      "source": "https://wiki.smite2.com/w/Thanatos",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "the-morrigan",
@@ -1542,7 +1986,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_The_Morrigan%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/The_Morrigan",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Mischief",
+      "description": "Confusion no longer Stealths you but on refire, you swap positions with your clone.",
+      "source": "https://wiki.smite2.com/w/The_Morrigan",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "thor",
@@ -1560,7 +2010,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Thor%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Thor",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Thunderstruck",
+      "description": "Thunderstruck is always active but chains for less damage. Triggering it 3 times on a god heals Thor, slowing and trembling them. Warrior’s Madness grants Protections instead of Strength. Mjolnir’s Attunement no longer deals bonus damage, and his abilities have less scaling.",
+      "source": "https://wiki.smite2.com/w/Thor",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "tsukuyomi",
@@ -1578,7 +2034,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Tsukuyomi%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Tsukuyomi",
     "placeholder": false,
-    "class": "Assassin"
+    "class": "Assassin",
+    "aspect": {
+      "name": "Aspect of Mangetsu",
+      "description": "When gaining Shingetsu Ranged Attack, they become Mangetsu Ranged Attacks instead. Dark Moon Shuriken no longer sticks to gods. Piercing Moonlight hits each target only once for major damage in an AoE, before returning to his casting location.",
+      "source": "https://wiki.smite2.com/w/Tsukuyomi",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ullr",
@@ -1613,7 +2075,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Vulcan%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Vulcan",
     "placeholder": false,
-    "class": "Mage"
+    "class": "Mage",
+    "aspect": {
+      "name": "Aspect of Fortification",
+      "description": "Vulcan's Passive gains: Being near one of your turrets grants you and the turret increased Protections and Health Regeneration. Backfire and Magma Bomb have lower Damage Scaling.",
+      "source": "https://wiki.smite2.com/w/Vulcan",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "xbalanque",
@@ -1630,7 +2098,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Xbalanque%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Xbalanque",
     "placeholder": false,
-    "class": "Hunter"
+    "class": "Hunter",
+    "aspect": {
+      "name": "Aspect of the Nightstalker",
+      "description": "Branching Bola is no longer a toggle but provides 3 fires of ability based projectiles. Poison Darts requires less hits to deal full damage. Darkest of Nights loses existing buffs but provides increased ability damage.",
+      "source": "https://wiki.smite2.com/w/Xbalanque",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "xing-tian",
@@ -1649,7 +2123,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Xing_Tian%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Xing_Tian",
     "placeholder": false,
-    "class": "Warrior"
+    "class": "Warrior",
+    "aspect": {
+      "name": "Aspect of Relentless Spite",
+      "description": "Smouldering Rage no longer grants HPS or temporary Maximum Health. Instead, you gain Spite, a resource that stacks up to 100 and starts at max. Sky-Cutting Axe no longer grants protections. Whirlwind of Rage and Steel can be ranked up at level 1, has no Cooldown, and no longer grabs enemies, but can be channeled as long as you have Spite.",
+      "source": "https://wiki.smite2.com/w/Xing_Tian",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "yemoja",
@@ -1667,7 +2147,13 @@
     "imageSource": "https://wiki.smite2.com/images/T_Yemoja%28S2%29_Default_Icon.png",
     "page": "https://wiki.smite2.com/w/Yemoja",
     "placeholder": false,
-    "class": "Guardian"
+    "class": "Guardian",
+    "aspect": {
+      "name": "Aspect of Downpour",
+      "description": "Yemoja’s abilities have higher Intelligence Scaling. Mending Waters no longer affects allies but stops and bounces on enemy gods, dealing damage, shield damage, and grants Intelligence per hit. Moonstrike no longer stuns.",
+      "source": "https://wiki.smite2.com/w/Yemoja",
+      "asOf": "2026-11-10"
+    }
   },
   {
     "id": "ymir",

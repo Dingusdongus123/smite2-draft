@@ -298,6 +298,11 @@ function createApp(options = {}) {
     } else if (action.type === 'undo') {
       send(ws, { type: 'notice', message: 'Undo is only available in same-screen practice.' });
       return;
+    } else if (action.type === 'aspect') {
+      if (action.side !== meta.side) {
+        send(ws, { type: 'notice', message: 'You can only act for your own side.' });
+        return;
+      }
     } else {
       send(ws, { type: 'notice', message: 'Unknown action.' });
       return;

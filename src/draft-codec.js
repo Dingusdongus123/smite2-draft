@@ -68,7 +68,9 @@
     const gods = record.gods || [];
     if (gods.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
     const index = new Map(rosterIds.map((id, i) => [id, i]));
-    const bytes = [1, format === 'extended' ? 1 : 0];
+    const version = Array.isArray(record.aspects) ? 2 : 1;
+    if (version === 2 && record.aspects.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
+    const bytes = [version, format === 'extended' ? 1 : 0];
     const day = dayNumber(record.date);
     bytes.push((day >> 8) & 255, day & 255);
     for (const side of ['Order', 'Chaos']) {
@@ -83,7 +85,10 @@
         bytes.push(index.get(god));
       }
     }
-    return 'cd1.' + b64encode(bytes);
+    if (version === 2) {
+      record.aspects.forEach(function (on, i) { bytes.push(on && gods[i] ? 1 : 0); });
+    }
+    return (version === 2 ? 'cd2.' : 'cd1.') + b64encode(bytes);
   }
 
   function readName(bytes, offset) {
@@ -94,12 +99,14 @@
   }
 
   function decodeDraft(code, rosterIds) {
-    const raw = String(code || '').trim().replace(/^cd1\./, '');
-    if (!raw || raw.length > 500) throw new Error('That draft ID could not be read.');
+    const text = String(code || '').trim();
+    const version = text.indexOf('cd2.') === 0 ? 2 : 1;
+    const raw = text.replace(/^cd[12]\./, '');
+    if (!raw || raw.length > 800) throw new Error('That draft ID could not be read.');
     let bytes;
     try { bytes = b64decode(raw); }
     catch { throw new Error('That draft ID could not be read.'); }
-    if (bytes[0] !== 1 || bytes.length < 6) throw new Error('That draft ID could not be read.');
+    if (bytes[0] !== version || bytes.length < 6) throw new Error('That draft ID could not be read.');
     const format = bytes[1] === 1 ? 'extended' : 'standard';
     const day = (bytes[2] << 8) | bytes[3];
     let cursor = 4;
@@ -108,26 +115,30 @@
     const chaosName = readName(bytes, cursor);
     cursor = chaosName.next;
     const need = actionCount(format);
-    if (bytes.length !== cursor + need) throw new Error('That draft ID does not match a completed ' + format + ' draft.');
+    const tail = version === 2 ? need * 2 : need;
+    if (bytes.length !== cursor + tail) throw new Error('That draft ID does not match a completed ' + format + ' draft.');
     const gods = [];
+    const aspects = [];
     for (let i = 0; i < need; i++) {
       const n = bytes[cursor + i];
       if (n === 255) gods.push(null);
       else if (n >= rosterIds.length) throw new Error('That draft ID is for a different roster.');
       else gods.push(rosterIds[n]);
+      aspects.push(version === 2 && bytes[cursor + need + i] === 1 && n !== 255);
     }
     return {
       format: format,
       date: dateFromDay(day),
       names: { Order: orderName.text, Chaos: chaosName.text },
-      gods: gods
+      gods: gods,
+      aspects: aspects
     };
   }
 
   function orderedActions(record, draftOrders) {
     const order = draftOrders[record.format];
     if (!order || order.length !== record.gods.length) throw new Error('Draft order does not match this ID.');
-    return record.gods.map((god, i) => ({ step: i, side: order[i].side, type: order[i].type, god: god }));
+    return record.gods.map((god, i) => ({ step: i, side: order[i].side, type: order[i].type, god: god, aspect: !!(record.aspects && record.aspects[i] && order[i].type === 'pick') }));
   }
 
   function norm(value) {
