@@ -877,7 +877,8 @@ function assistedSide() { return mode === 'host' ? 'Order' : mode === 'guest' ? 
 function noteAssist(action) {
   const plan = loadPlans().find(item => item.id === assistPlanId);
   if (!plan || !action) return;
-  const advice = DraftCodec.advise(plan, [...E.used(state)], action, assistedSide(), gods);
+  const ourPicks = state.actions.filter(a => a.side === assistedSide() && a.type === 'pick' && a.god).map(a => a.god);
+  const advice = DraftCodec.advise(plan, [...E.used(state)], action, assistedSide(), gods, ourPicks);
   if (!advice.alert) return;
   toast(advice.alert.text);
   play('alert');
@@ -950,38 +951,104 @@ function previewGod(id) {
   $('lockBtn').textContent = `${turn?.type === 'ban' ? 'Ban' : 'Pick'} ${byId[id].name}`;
 }
 let editingPlan = null;
-let planTarget = 'picks';
-function blankPlan() {
-  return { id: 'plan-' + Math.random().toString(36).slice(2, 10), name: 'New plan', picks: [], bans: [], comps: [] };
+let planTab = 'Solo';
+let compTarget = null;
+const PLAN_TABS = ['Solo', 'Jungle', 'Mid', 'Support', 'Carry', 'Bans'];
+function roleLabel(role) { return DraftCodec.ROLE_LABELS[role] || (role === 'Bans' ? 'Bans' : role); }
+function roleIcon(tab) {
+  const paths = {
+    Solo: 'M8 1.5v9M5.5 4.5h5M6.2 13.5h3.6',
+    Jungle: 'M3 13C6 11 8 7 13 2 9 4 6 8 3 13z',
+    Mid: 'M8 1.5v3M8 11.5v3M1.5 8h3M11.5 8h3M3.8 3.8l2 2M10.2 10.2l2 2M12.2 3.8l-2 2M5.8 10.2l-2 2',
+    Support: 'M8 1.5l5 2v4.2c0 3.2-2.1 5.4-5 6.6-2.9-1.2-5-3.4-5-6.6V3.5z',
+    Carry: 'M3 12.5C6.5 11 9.5 8 12.5 4M3.5 13.5c2.2-2.6 5-4.6 9-5.4M3 12.5l1.8 1.8',
+    Bans: 'M3.5 3.5l9 9M12.5 3.5l-9 9'
+  };
+  return `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${paths[tab] || ''}"/></svg>`;
 }
-function planToText(ids) { return (ids || []).map(id => byId[id]?.name || id).join('\n'); }
-function readPlanForm() {
-  const picks = DraftCodec.parseGodList($('planPicks').value, gods);
-  const bans = DraftCodec.parseGodList($('planBans').value, gods);
-  const comps = [...$('planComps').querySelectorAll('[data-comp]')].map(block => ({
-    name: block.querySelector('.comp-name').value.trim().slice(0, 32) || 'Comp',
-    gods: [...block.querySelectorAll('.comp-god')].map(input => DraftCodec.parseGodList(input.value, gods).ids[0] || '')
-  }));
-  const unknown = [...picks.unknown, ...bans.unknown];
-  $('planParseNote').textContent = unknown.length ? 'Not matched: ' + unknown.join(', ') : 'Lists matched to the roster.';
-  return { id: editingPlan?.id || blankPlan().id, name: $('planName').value.trim().slice(0, 32) || 'Plan', picks: picks.ids, bans: bans.ids, comps: comps };
+function blankPlan() {
+  return DraftCodec.normalizePlan({ id: 'plan-' + Math.random().toString(36).slice(2, 10), name: 'New plan', roles: {}, bans: [], comps: [] }, gods);
+}
+function adoptPlan(plan) {
+  const next = DraftCodec.normalizePlan(plan, gods);
+  if (!next.id) next.id = blankPlan().id;
+  return next;
+}
+function rememberPlanName() {
+  if (!editingPlan || !$('planName')) return;
+  editingPlan.name = $('planName').value.trim().slice(0, 32) || 'Plan';
+}
+function currentPlanList() {
+  return planTab === 'Bans' ? editingPlan.bans : editingPlan.roles[planTab];
 }
 function renderPlanEditor() {
   const plans = loadPlans();
   $('planList').innerHTML = plans.map(plan => `<option value="${esc(plan.id)}">${esc(plan.name)}</option>`).join('') || '<option value="">No saved plans</option>';
-  if (!editingPlan && plans[0]) editingPlan = plans[0];
+  if (!editingPlan && plans[0]) editingPlan = adoptPlan(plans[0]);
   if (!editingPlan) editingPlan = blankPlan();
   if (plans.some(plan => plan.id === editingPlan.id)) $('planList').value = editingPlan.id;
   $('planName').value = editingPlan.name || '';
-  $('planPicks').value = planToText(editingPlan.picks);
-  $('planBans').value = planToText(editingPlan.bans);
-  $('planComps').innerHTML = (editingPlan.comps || []).map((comp, index) => `<div data-comp="${index}"><input class="comp-name" value="${esc(comp.name || 'Comp')}" aria-label="Comp name">${DraftCodec.ROLES.map((role, i) => `<label class="muted">${role}<input class="comp-god" value="${esc(comp.gods?.[i] ? (byId[comp.gods[i]]?.name || '') : '')}" aria-label="${role}"></label>`).join('')}</div>`).join('');
-  $('planParseNote').textContent = '';
-}
-function renderPlanHits() {
+  $('planTabs').innerHTML = PLAN_TABS.map(tab => `<button type="button" data-plan-tab="${tab}" class="${tab === planTab ? 'active' : ''}" aria-pressed="${tab === planTab}">${roleIcon(tab)}${roleLabel(tab)}</button>`).join('');
+  const list = currentPlanList();
+  $('planCount').textContent = `${roleLabel(planTab)} ${list.length}/${DraftCodec.PLAN_LIMIT}`;
+  $('planPriority').innerHTML = list.length ? list.map((id, index) => {
+    const god = byId[id];
+    if (!god) return '';
+    return `<div class="prio" draggable="true" data-index="${index}" data-id="${esc(id)}">${picture(god)}<span class="rank">${index + 1}</span><button type="button" class="x" data-remove="${index}" aria-label="Remove ${esc(god.name)}">×</button><span class="nudge"><button type="button" data-up="${index}" aria-label="Move ${esc(god.name)} up">↑</button><button type="button" data-down="${index}" aria-label="Move ${esc(god.name)} down">↓</button></span></div>`;
+  }).join('') : '<p class="muted">Click portraits to build this list. Drag a portrait, or use the arrows, to reorder it.</p>';
+  $('planOverview').innerHTML = DraftCodec.ROLES.map(role => {
+    const faces = (editingPlan.roles[role] || []).map(id => byId[id] ? picture(byId[id]) : '').join('');
+    return `<div class="ov"><b>${roleLabel(role)}</b><div class="faces">${faces || '<span class="muted">—</span>'}</div></div>`;
+  }).join('');
   const term = $('planGodSearch').value.trim().toLowerCase();
-  const hits = gods.filter(g => !term || g.name.toLowerCase().includes(term)).slice(0, 8);
-  $('planGodHits').innerHTML = hits.map(g => `<button type="button" data-plan-god="${g.id}">${esc(g.name)}</button>`).join('');
+  const klass = $('planClass').value;
+  const shown = gods.filter(g => (!term || g.name.toLowerCase().includes(term)) && (!klass || g.class === klass));
+  $('planGrid').innerHTML = shown.map(g => {
+    const on = list.includes(g.id);
+    const elsewhere = planTab === 'Bans'
+      ? DraftCodec.ROLES.filter(role => editingPlan.roles[role].includes(g.id))
+      : DraftCodec.ROLES.filter(role => role !== planTab && editingPlan.roles[role].includes(g.id));
+    const badge = elsewhere.length ? `<span class="role-badge">${esc(elsewhere.map(roleLabel).join(' '))}</span>` : '';
+    return `<button type="button" class="god ${on ? 'on' : ''}" data-plan-add="${g.id}" aria-pressed="${on}" aria-label="${esc(g.name)}">${picture(g, 'loading="lazy"')}<span>${esc(g.name)}</span>${badge}</button>`;
+  }).join('') || '<div class="empty-grid">No gods match these filters.</div>';
+  $('planComps').innerHTML = (editingPlan.comps || []).map((comp, index) => {
+    const slots = ['Solo', 'Jungle', 'Mid', 'Support', 'Carry'].map(role => {
+      const roleIndex = DraftCodec.ROLES.indexOf(role);
+      const id = comp.gods[roleIndex];
+      const armed = compTarget && compTarget.index === index && compTarget.roleIndex === roleIndex;
+      const god = id && byId[id];
+      return `<button type="button" class="comp-slot ${armed ? 'armed' : ''}" data-comp-slot="${index}:${roleIndex}" aria-label="${roleLabel(role)} for ${esc(comp.name || 'comp')}">${god ? picture(god) : roleLabel(role)}</button>`;
+    }).join('');
+    return `<div class="comp-row" data-comp="${index}"><input class="comp-name" value="${esc(comp.name || 'Comp')}" aria-label="Comp name" maxlength="32">${slots}<button type="button" data-comp-remove="${index}">Remove</button></div>`;
+  }).join('');
+  $('planHint').textContent = compTarget
+    ? `Choosing ${roleLabel(DraftCodec.ROLES[compTarget.roleIndex])} for ${editingPlan.comps[compTarget.index]?.name || 'this comp'}. Click a portrait.`
+    : 'One portrait per role. Click a slot, then a portrait.';
+}
+function movePlanItem(from, to) {
+  const list = currentPlanList();
+  if (to < 0 || to >= list.length || from === to) return;
+  const [item] = list.splice(from, 1);
+  list.splice(to, 0, item);
+  renderPlanEditor();
+}
+function togglePlanGod(id) {
+  rememberPlanName();
+  if (compTarget) {
+    const comp = editingPlan.comps[compTarget.index];
+    if (comp) comp.gods[compTarget.roleIndex] = comp.gods[compTarget.roleIndex] === id ? '' : id;
+    compTarget = null;
+    renderPlanEditor();
+    return;
+  }
+  const list = currentPlanList();
+  const at = list.indexOf(id);
+  if (at >= 0) list.splice(at, 1);
+  else if (list.length >= DraftCodec.PLAN_LIMIT) {
+    toast(roleLabel(planTab) + ' already has ' + DraftCodec.PLAN_LIMIT + ' gods.');
+    return;
+  } else list.push(id);
+  renderPlanEditor();
 }
 function renderAssist() {
   const show = mode !== 'replay' && ['draft', 'paused', 'summary'].includes(state.phase);
@@ -995,13 +1062,20 @@ function renderAssist() {
   if (mode === 'local') $('assistSide').value = assistSide;
   const plan = plans.find(item => item.id === assistPlanId);
   if (!plan) {
-    $('assistBody').innerHTML = '<p class="muted">Attach a plan to see your next ban and pick. It stays on this screen and is not sent to your rival.</p>';
+    $('assistBody').innerHTML = '<p class="muted">Attach a plan to see the next god for each role. It stays on this screen and is not sent to your rival.</p>';
     return;
   }
-  const advice = DraftCodec.advise(plan, [...E.used(state)], null, assistedSide(), gods);
-  const chip = item => `<button type="button" class="${item.out ? 'out' : ''}" data-suggest="${esc(item.id)}" ${item.out ? 'disabled' : ''}>${esc(item.name)}</button>`;
-  const comps = advice.comps.map(comp => `<div class="comp ${comp.broken ? 'broken' : comp.possible ? 'possible' : ''}"><strong>${esc(comp.name)}</strong> · ${comp.broken ? 'Broken' : comp.possible ? 'Still possible' : 'Incomplete'}<div>${comp.gods.map(g => `${esc(g.role)} ${g.out ? '<s>' + esc(g.name) + '</s>' : esc(g.name)}`).join(' · ')}</div></div>`).join('');
-  $('assistBody').innerHTML = `<div class="row"><button type="button" id="suggestBan" data-suggest="${esc(advice.nextBan || '')}" ${advice.nextBan ? '' : 'disabled'}>Next ban: ${advice.nextBan ? esc(byId[advice.nextBan].name) : '—'}</button><button type="button" id="suggestPick" data-suggest="${esc(advice.nextPick || '')}" ${advice.nextPick ? '' : 'disabled'}>Next pick: ${advice.nextPick ? esc(byId[advice.nextPick].name) : '—'}</button></div><div class="eyebrow">Pick priority</div><div class="plist" id="pickPriority">${advice.picks.map(chip).join('') || '<span class="muted">None</span>'}</div><div class="eyebrow">Ban priority</div><div class="plist">${advice.bans.map(chip).join('') || '<span class="muted">None</span>'}</div>${comps}`;
+  const ourPicks = state.actions.filter(a => a.side === assistedSide() && a.type === 'pick' && a.god).map(a => a.god);
+  const advice = DraftCodec.advise(plan, [...E.used(state)], null, assistedSide(), gods, ourPicks);
+  const face = item => {
+    const god = byId[item.id];
+    if (!god) return '';
+    return `<button type="button" class="${item.out ? 'out' : ''}" data-suggest="${esc(item.id)}" ${item.out ? 'disabled' : ''} aria-label="${esc(god.name)}">${picture(god)}<span class="sr">${esc(god.name)}</span></button>`;
+  };
+  const roles = advice.roles.map(role => `<div class="assist-role" id="role${role.role}"><b>${esc(role.label)}</b>${role.next ? `<button type="button" id="suggest-${role.role}" data-suggest="${esc(role.next)}">Next: ${esc(byId[role.next].name)}</button>` : '<span class="muted">No priority left</span>'}<div class="faces">${role.list.map(face).join('')}</div></div>`).join('');
+  const banFaces = advice.bans.map(face).join('');
+  const comps = advice.comps.map(comp => `<div class="comp ${comp.broken ? 'broken' : comp.possible ? 'possible' : ''}"><strong>${esc(comp.name)}</strong> · ${comp.broken ? 'Broken' : comp.possible ? 'Still possible' : 'Incomplete'}<div>${comp.gods.map(g => `${esc(g.label)} ${g.out ? '<s>' + esc(g.name) + '</s>' : esc(g.name)}`).join(' · ')}</div></div>`).join('');
+  $('assistBody').innerHTML = `<div class="row"><button type="button" id="suggestBan" data-suggest="${esc(advice.nextBan || '')}" ${advice.nextBan ? '' : 'disabled'}>Next ban: ${advice.nextBan ? esc(byId[advice.nextBan].name) : '—'}</button></div><p class="needed">Still needed: ${advice.needed.length ? esc(advice.needed.join(' · ')) : 'every planned role has a pick'}</p><div class="assist-roles">${roles}<div class="assist-role" id="roleBans"><b>Bans</b><div class="faces">${banFaces || '<span class="muted">None</span>'}</div></div></div>${comps}`;
 }
 
 $('historyBtn').onclick = () => { renderHistory(); $('historyModal').hidden = false; };
@@ -1019,12 +1093,13 @@ $('historyList').onclick = event => {
   }
 };
 $('loadReplayBtn').onclick = () => startReplay($('replayPaste').value);
-$('plansBtn').onclick = () => { renderPlanEditor(); renderPlanHits(); $('plansModal').hidden = false; };
-$('closePlans').onclick = () => { $('plansModal').hidden = true; };
-$('planList').onchange = () => { editingPlan = loadPlans().find(plan => plan.id === $('planList').value) || blankPlan(); renderPlanEditor(); };
-$('planNew').onclick = () => { editingPlan = blankPlan(); renderPlanEditor(); };
+$('plansBtn').onclick = () => { renderPlanEditor(); $('plansModal').hidden = false; };
+$('closePlans').onclick = () => { $('plansModal').hidden = true; compTarget = null; };
+$('planList').onchange = () => { editingPlan = adoptPlan(loadPlans().find(plan => plan.id === $('planList').value) || blankPlan()); compTarget = null; renderPlanEditor(); };
+$('planNew').onclick = () => { editingPlan = blankPlan(); compTarget = null; planTab = 'Solo'; renderPlanEditor(); };
 $('planSave').onclick = () => {
-  const plan = readPlanForm();
+  rememberPlanName();
+  const plan = adoptPlan(editingPlan);
   const list = loadPlans().filter(item => item.id !== plan.id);
   list.unshift(plan);
   savePlans(list);
@@ -1036,22 +1111,23 @@ $('planDelete').onclick = () => {
   if (!editingPlan) return;
   savePlans(loadPlans().filter(plan => plan.id !== editingPlan.id));
   editingPlan = null;
+  compTarget = null;
   renderPlanEditor();
 };
 $('planCopy').onclick = () => {
-  const plan = readPlanForm();
-  copyText(DraftCodec.encodePlan(plan, gods.map(g => g.id)), 'Plan code copied.');
+  rememberPlanName();
+  copyText(DraftCodec.encodePlan(adoptPlan(editingPlan), gods.map(g => g.id)), 'Plan code copied.');
 };
 $('planCodeLoad').onclick = () => {
   try {
-    const plan = DraftCodec.decodePlan($('planCodePaste').value, gods.map(g => g.id));
-    editingPlan = { ...blankPlan(), ...plan };
+    editingPlan = adoptPlan(DraftCodec.decodePlan($('planCodePaste').value, gods.map(g => g.id)));
+    compTarget = null;
     renderPlanEditor();
     toast('Plan code loaded. Save it to keep it in the list.');
   } catch (error) { toast(error.message); }
 };
 $('planExport').onclick = () => {
-  const blob = new Blob([JSON.stringify({ crystalPlans: 1, plans: loadPlans() }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ crystalPlans: 2, plans: loadPlans().map(plan => adoptPlan(plan)) }, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -1068,7 +1144,7 @@ $('planImportFile').onchange = () => {
     try {
       const data = JSON.parse(String(reader.result));
       const plans = Array.isArray(data.plans) ? data.plans : Array.isArray(data) ? data : [];
-      savePlans(plans.filter(plan => plan && plan.name && (plan.picks || plan.bans || plan.comps)));
+      savePlans(plans.filter(plan => plan && plan.name && (plan.roles || plan.picks || plan.bans || plan.comps)).map(plan => adoptPlan(plan)));
       editingPlan = null;
       renderPlanEditor();
       toast('Plans imported.');
@@ -1076,16 +1152,79 @@ $('planImportFile').onchange = () => {
   };
   reader.readAsText(file);
 };
-$('planGodSearch').addEventListener('input', renderPlanHits);
-$('planPicks').addEventListener('focus', () => { planTarget = 'picks'; });
-$('planBans').addEventListener('focus', () => { planTarget = 'bans'; });
-$('planGodHits').onclick = event => {
-  const button = event.target.closest('[data-plan-god]');
+$('planGodSearch').addEventListener('input', () => { rememberPlanName(); renderPlanEditor(); });
+$('planClass').addEventListener('change', () => { rememberPlanName(); renderPlanEditor(); });
+[...new Set(gods.map(g => g.class).filter(Boolean))].sort().forEach(name => {
+  const option = document.createElement('option');
+  option.value = name;
+  option.textContent = name;
+  $('planClass').appendChild(option);
+});
+$('planTabs').onclick = event => {
+  const tab = event.target.closest('[data-plan-tab]');
+  if (!tab) return;
+  rememberPlanName();
+  planTab = tab.dataset.planTab;
+  compTarget = null;
+  renderPlanEditor();
+};
+$('planGrid').onclick = event => {
+  const button = event.target.closest('[data-plan-add]');
   if (!button) return;
-  const name = byId[button.dataset.planGod].name;
-  const field = planTarget === 'bans' ? $('planBans') : $('planPicks');
-  field.value = (field.value.trim() ? field.value.trim() + '\n' : '') + name;
-  $('planParseNote').textContent = name + ' added. Save the plan to keep it.';
+  togglePlanGod(button.dataset.planAdd);
+};
+$('planPriority').onclick = event => {
+  const remove = event.target.closest('[data-remove]');
+  const up = event.target.closest('[data-up]');
+  const down = event.target.closest('[data-down]');
+  if (!remove && !up && !down) return;
+  rememberPlanName();
+  const index = Number((remove || up || down).dataset.remove || (up || down).dataset.up || down.dataset.down);
+  if (remove) currentPlanList().splice(index, 1);
+  if (up) movePlanItem(index, index - 1);
+  if (down) movePlanItem(index, index + 1);
+  if (remove) renderPlanEditor();
+};
+let planDragIndex = null;
+$('planPriority').addEventListener('dragstart', event => {
+  const card = event.target.closest('[data-index]');
+  if (!card) return;
+  planDragIndex = Number(card.dataset.index);
+  event.dataTransfer?.setData('text/plain', String(planDragIndex));
+});
+$('planPriority').addEventListener('dragover', event => { if (planDragIndex != null) event.preventDefault(); });
+$('planPriority').addEventListener('drop', event => {
+  const card = event.target.closest('[data-index]');
+  if (planDragIndex == null || !card) return;
+  event.preventDefault();
+  rememberPlanName();
+  movePlanItem(planDragIndex, Number(card.dataset.index));
+  planDragIndex = null;
+});
+$('planAddComp').onclick = () => {
+  rememberPlanName();
+  editingPlan.comps.push({ name: 'Comp ' + (editingPlan.comps.length + 1), gods: ['', '', '', '', ''] });
+  renderPlanEditor();
+};
+$('planComps').addEventListener('input', event => {
+  const row = event.target.closest('[data-comp]');
+  if (!row || !event.target.classList.contains('comp-name')) return;
+  editingPlan.comps[Number(row.dataset.comp)].name = event.target.value.slice(0, 32);
+});
+$('planComps').onclick = event => {
+  const remove = event.target.closest('[data-comp-remove]');
+  const slot = event.target.closest('[data-comp-slot]');
+  if (remove) {
+    rememberPlanName();
+    editingPlan.comps.splice(Number(remove.dataset.compRemove), 1);
+    compTarget = null;
+    renderPlanEditor();
+    return;
+  }
+  if (!slot) return;
+  const [index, roleIndex] = slot.dataset.compSlot.split(':').map(Number);
+  compTarget = compTarget && compTarget.index === index && compTarget.roleIndex === roleIndex ? null : { index, roleIndex };
+  renderPlanEditor();
 };
 $('assistPlan').onchange = () => { assistPlanId = $('assistPlan').value; renderAssist(); };
 $('assistSide').onchange = () => { assistSide = $('assistSide').value; renderAssist(); };
