@@ -1,0 +1,1710 @@
+[
+  {
+    "id": "achilles",
+    "name": "Achilles",
+    "pantheon": "Greek",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Hero of the Trojan War",
+    "classes": [
+      "Warrior",
+      "Brawler"
+    ],
+    "release": "2025-02-17",
+    "imageSource": "https://wiki.smite2.com/images/T_Achilles%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Achilles",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "agni",
+    "name": "Agni",
+    "pantheon": "Hindu",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "God of Fire",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2025-01-07",
+    "imageSource": "https://wiki.smite2.com/images/T_Agni%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Agni",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "ah-puch",
+    "name": "Ah Puch",
+    "pantheon": "Maya",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Horrific God of Decay",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2026-05-19",
+    "imageSource": "https://wiki.smite2.com/images/T_Ah_Puch%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ah_Puch",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "aladdin",
+    "name": "Aladdin",
+    "pantheon": "Tales of Arabia",
+    "role": "Jungle",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "The Sultan",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2025-01-13",
+    "imageSource": "https://wiki.smite2.com/images/T_Aladdin%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Aladdin",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "amaterasu",
+    "name": "Amaterasu",
+    "pantheon": "Japanese",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Shining Light",
+    "classes": [
+      "Guardian",
+      "Tank",
+      "Brawler"
+    ],
+    "release": "2024-09-17",
+    "imageSource": "https://wiki.smite2.com/images/T_Amaterasu%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Amaterasu",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "anhur",
+    "name": "Anhur",
+    "pantheon": "Egyptian",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Slayer of Enemies",
+    "classes": [
+      "Hunter",
+      "Sharpshooter"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Anhur%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Anhur",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "anubis",
+    "name": "Anubis",
+    "pantheon": "Egyptian",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "God of the Dead",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Anubis%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Anubis",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "aphrodite",
+    "name": "Aphrodite",
+    "pantheon": "Greek",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of Beauty",
+    "classes": [
+      "Mage"
+    ],
+    "release": "2024-12-10",
+    "imageSource": "https://wiki.smite2.com/images/T_Aphrodite%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Aphrodite",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "apollo",
+    "name": "Apollo",
+    "pantheon": "Greek",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "God of Music",
+    "classes": [
+      "Hunter"
+    ],
+    "release": "2025-05-19",
+    "imageSource": "https://wiki.smite2.com/images/T_Apollo%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Apollo",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "ares",
+    "name": "Ares",
+    "pantheon": "Greek",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "God of War",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2024-07-18",
+    "imageSource": "https://wiki.smite2.com/images/T_Ares%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ares",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "artemis",
+    "name": "Artemis",
+    "pantheon": "Greek",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Goddess of the Hunt",
+    "classes": [
+      "Hunter",
+      "Sharpshooter"
+    ],
+    "release": "2025-02-21",
+    "imageSource": "https://wiki.smite2.com/images/T_Artemis%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Artemis",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "artio",
+    "name": "Artio",
+    "pantheon": "Celtic",
+    "role": "Solo",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "The Bear Goddess",
+    "classes": [
+      "Guardian",
+      "Brawler"
+    ],
+    "release": "2025-12-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Artio%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Artio",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "athena",
+    "name": "Athena",
+    "pantheon": "Greek",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "Goddess of Wisdom",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Athena%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Athena",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "atlas",
+    "name": "Atlas",
+    "pantheon": "Greek",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "Titan of the Cosmos",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2026-05-05",
+    "imageSource": "https://wiki.smite2.com/images/T_Atlas%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Atlas",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "awilix",
+    "name": "Awilix",
+    "pantheon": "Maya",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Goddess of the Moon",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2025-03-03",
+    "imageSource": "https://wiki.smite2.com/images/T_Awilix%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Awilix",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "bacchus",
+    "name": "Bacchus",
+    "pantheon": "Roman",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "God of Wine",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Bacchus%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Bacchus",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "baron-samedi",
+    "name": "Baron Samedi",
+    "pantheon": "Voodoo",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "God of Life and Death",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-10-03",
+    "imageSource": "https://wiki.smite2.com/images/T_Baron_Samedi%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Baron_Samedi",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "bastet",
+    "name": "Bastet",
+    "pantheon": "Egyptian",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Goddess of Cats",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2026-06-16",
+    "imageSource": "https://wiki.smite2.com/images/T_Bastet%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Bastet",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "bellona",
+    "name": "Bellona",
+    "pantheon": "Roman",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Goddess of War",
+    "classes": [
+      "Guardian",
+      "Tank",
+      "Brawler"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Bellona%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Bellona",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "cabrakan",
+    "name": "Cabrakan",
+    "pantheon": "Maya",
+    "role": "Solo",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "Destroyer of Mountains",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2025-01-20",
+    "imageSource": "https://wiki.smite2.com/images/T_Cabrakan%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Cabrakan",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "cerberus",
+    "name": "Cerberus",
+    "pantheon": "Greek",
+    "role": "Solo",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "Warden of the Underworld",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2025-04-04",
+    "imageSource": "https://wiki.smite2.com/images/T_Cerberus%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Cerberus",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "cernunnos",
+    "name": "Cernunnos",
+    "pantheon": "Celtic",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "The Horned God",
+    "classes": [
+      "Hunter",
+      "Sharpshooter",
+      "Nuker"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Cernunnos%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Cernunnos",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "chaac",
+    "name": "Chaac",
+    "pantheon": "Maya",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "God of Rain",
+    "classes": [
+      "Guardian",
+      "Tank",
+      "Nuker"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Chaac%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Chaac",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "charon",
+    "name": "Charon",
+    "pantheon": "Greek",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "The Ferryman",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2026-03-10",
+    "imageSource": "https://wiki.smite2.com/images/T_Charon%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Charon",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "chiron",
+    "name": "Chiron",
+    "pantheon": "Greek",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "The Great Teacher",
+    "classes": [
+      "Mage",
+      "Nuker",
+      "Sharpshooter"
+    ],
+    "release": "2026-01-27",
+    "imageSource": "https://wiki.smite2.com/images/T_Chiron%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Chiron",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "chronos",
+    "name": "Chronos",
+    "pantheon": "Greek",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Keeper of Time",
+    "classes": [
+      "Mage"
+    ],
+    "release": "2026-06-30",
+    "imageSource": "https://wiki.smite2.com/images/T_Chronos%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Chronos",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "cu-chulainn",
+    "name": "Cu Chulainn",
+    "pantheon": "Celtic",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Hound of Ulster",
+    "classes": [
+      "Warrior"
+    ],
+    "release": "2026-07-28",
+    "imageSource": "https://wiki.smite2.com/images/T_Cu_Chulainn%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Cu_Chulainn",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "cupid",
+    "name": "Cupid",
+    "pantheon": "Roman",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "God of Love",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-11-25",
+    "imageSource": "https://wiki.smite2.com/images/T_Cupid%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Cupid",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "da-ji",
+    "name": "Da Ji",
+    "pantheon": "Chinese",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Nine-Tailed Fox",
+    "classes": [
+      "Assassin"
+    ],
+    "release": "2025-11-18",
+    "imageSource": "https://wiki.smite2.com/images/T_Da_Ji%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Da_Ji",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "danzaburou",
+    "name": "Danzaburou",
+    "pantheon": "Japanese",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "The Legendary Tanuki",
+    "classes": [
+      "Hunter",
+      "Sharpshooter",
+      "Slayer"
+    ],
+    "release": "2024-10-17",
+    "imageSource": "https://wiki.smite2.com/images/T_Danzaburou%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Danzaburou",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "discordia",
+    "name": "Discordia",
+    "pantheon": "Roman",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of Strife",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2026-01-13",
+    "imageSource": "https://wiki.smite2.com/images/T_Discordia%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Discordia",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "eset",
+    "name": "Eset",
+    "pantheon": "Egyptian",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of Magic",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2025-10-21",
+    "imageSource": "https://wiki.smite2.com/images/T_Eset%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Eset",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "fenrir",
+    "name": "Fenrir",
+    "pantheon": "Norse",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Unbound",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Fenrir%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Fenrir",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "ganesha",
+    "name": "Ganesha",
+    "pantheon": "Hindu",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "God of Success",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2025-06-20",
+    "imageSource": "https://wiki.smite2.com/images/T_Ganesha_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ganesha",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "geb",
+    "name": "Geb",
+    "pantheon": "Egyptian",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "God of Earth",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2025-01-07",
+    "imageSource": "https://wiki.smite2.com/images/T_Geb%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Geb",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "gilgamesh",
+    "name": "Gilgamesh",
+    "pantheon": "Babylonian",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "King of Uruk",
+    "classes": [
+      "Warrior",
+      "Brawler"
+    ],
+    "release": "2026-03-24",
+    "imageSource": "https://wiki.smite2.com/images/T_Gilgamesh%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Gilgamesh",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "guan-yu",
+    "name": "Guan Yu",
+    "pantheon": "Chinese",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Saint of War",
+    "classes": [
+      "Warrior",
+      "Brawler"
+    ],
+    "release": "2025-05-05",
+    "imageSource": "https://wiki.smite2.com/images/T_Guan_Yu%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Guan_Yu",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "hachiman",
+    "name": "Hachiman",
+    "pantheon": "Japanese",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Lord of the Eight Banners",
+    "classes": [
+      "Hunter",
+      "Sharpshooter"
+    ],
+    "release": "2026-09-08",
+    "imageSource": "https://wiki.smite2.com/images/T_Hachiman%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hachiman",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "hades",
+    "name": "Hades",
+    "pantheon": "Greek",
+    "role": "Solo",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "King of the Underworld",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-05-30",
+    "imageSource": "https://wiki.smite2.com/images/T_Hades%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hades",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "hecate",
+    "name": "Hecate",
+    "pantheon": "Greek",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of Sorcery",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-06-27",
+    "imageSource": "https://wiki.smite2.com/images/T_Hecate%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hecate",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "hel",
+    "name": "Hel",
+    "pantheon": "Norse",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of the Underworld",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2026-09-22",
+    "imageSource": "https://wiki.smite2.com/images/T_Hel%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hel",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "hercules",
+    "name": "Hercules",
+    "pantheon": "Roman",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Champion of Rome",
+    "classes": [
+      "Warrior",
+      "Brawler",
+      "Tank"
+    ],
+    "release": "2024-10-17",
+    "imageSource": "https://wiki.smite2.com/images/T_Hercules%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hercules",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "horus",
+    "name": "Horus",
+    "pantheon": "Egyptian",
+    "role": "Support",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Rightful Heir",
+    "classes": [
+      "Guardian",
+      "Warrior"
+    ],
+    "release": "2026-06-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Horus%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Horus",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "hou-yi",
+    "name": "Hou Yi",
+    "pantheon": "Chinese",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Defender of the Earth",
+    "classes": [
+      "Hunter"
+    ],
+    "release": "2025-07-29",
+    "imageSource": "https://wiki.smite2.com/images/T_Hou_Yi%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hou_Yi",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "hua-mulan",
+    "name": "Hua Mulan",
+    "pantheon": "Chinese",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Ascendant Warrior",
+    "classes": [
+      "Warrior",
+      "Tank",
+      "Brawler"
+    ],
+    "release": "2025-01-07",
+    "imageSource": "https://wiki.smite2.com/images/T_Hua_Mulan%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hua_Mulan",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "hun-batz",
+    "name": "Hun Batz",
+    "pantheon": "Maya",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Howler Monkey God",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2025-02-03",
+    "imageSource": "https://wiki.smite2.com/images/T_Hun_Batz%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Hun_Batz",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "ishtar",
+    "name": "Ishtar",
+    "pantheon": "Babylonian",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Goddess of Love and War",
+    "classes": [
+      "Hunter",
+      "Sharpshooter"
+    ],
+    "release": "2026-04-21",
+    "imageSource": "https://wiki.smite2.com/images/T_Ishtar%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ishtar",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "ix-chel",
+    "name": "Ix Chel",
+    "pantheon": "Maya",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "The Light Weaver",
+    "classes": [
+      "Mage"
+    ],
+    "release": "2026-08-11",
+    "imageSource": "https://wiki.smite2.com/images/T_Ix_Chel%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ix_Chel",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "izanami",
+    "name": "Izanami",
+    "pantheon": "Japanese",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Matron of the Dead",
+    "classes": [
+      "Hunter"
+    ],
+    "release": "2024-11-12",
+    "imageSource": "https://wiki.smite2.com/images/T_Izanami%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Izanami",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "janus",
+    "name": "Janus",
+    "pantheon": "Roman",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "God of Portals and Transitions",
+    "classes": [
+      "Mage"
+    ],
+    "release": "2025-08-12",
+    "imageSource": "https://wiki.smite2.com/images/T_Janus%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Janus",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "jing-wei",
+    "name": "Jing Wei",
+    "pantheon": "Chinese",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "The Oathkeeper",
+    "classes": [
+      "Hunter",
+      "Sharpshooter"
+    ],
+    "release": "2024-08-27",
+    "imageSource": "https://wiki.smite2.com/images/T_JingWei%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Jing_Wei",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "jormungandr",
+    "name": "Jormungandr",
+    "pantheon": "Norse",
+    "role": "Solo",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "The World Serpent",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2025-08-26",
+    "imageSource": "https://wiki.smite2.com/images/T_Jormungandr%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Jormungandr",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "kali",
+    "name": "Kali",
+    "pantheon": "Hindu",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Goddess of Destruction",
+    "classes": [
+      "Assassin"
+    ],
+    "release": "2025-04-18",
+    "imageSource": "https://wiki.smite2.com/images/T_Kali%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Kali",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "khepri",
+    "name": "Khepri",
+    "pantheon": "Egyptian",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "The Dawn Bringer",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2024-11-12",
+    "imageSource": "https://wiki.smite2.com/images/T_Khepri%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Khepri",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "kukulkan",
+    "name": "Kukulkan",
+    "pantheon": "Maya",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Serpent of the Nine Winds",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Kukulkan%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Kukulkan",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "kuzenbo",
+    "name": "Kuzenbo",
+    "pantheon": "Japanese",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "King Kappa",
+    "classes": [
+      "Guardian"
+    ],
+    "release": "2026-10-20",
+    "imageSource": "https://wiki.smite2.com/images/T_Kuzenbo%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Kuzenbo",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "loki",
+    "name": "Loki",
+    "pantheon": "Norse",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Trickster God",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Loki%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Loki",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "medusa",
+    "name": "Medusa",
+    "pantheon": "Greek",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "The Gorgon",
+    "classes": [
+      "Hunter"
+    ],
+    "release": "2024-12-10",
+    "imageSource": "https://wiki.smite2.com/images/T_Medusa%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Medusa",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "mercury",
+    "name": "Mercury",
+    "pantheon": "Roman",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Messenger of the Gods",
+    "classes": [
+      "Assassin"
+    ],
+    "release": "2025-07-01",
+    "imageSource": "https://wiki.smite2.com/images/T_Mercury%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Mercury",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "merlin",
+    "name": "Merlin",
+    "pantheon": "Arthurian",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "The Master Wizard",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2025-03-24",
+    "imageSource": "https://wiki.smite2.com/images/T_Merlin%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Merlin",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "mordred",
+    "name": "Mordred",
+    "pantheon": "Arthurian",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Breaker of the Round Table",
+    "classes": [
+      "Guardian",
+      "Tank",
+      "Slayer"
+    ],
+    "release": "2024-08-27",
+    "imageSource": "https://wiki.smite2.com/images/T_Mordred%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Mordred",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "morgan-le-fay",
+    "name": "Morgan Le Fay",
+    "pantheon": "Arthurian",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "The Dark Enchantress",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2026-02-24",
+    "imageSource": "https://wiki.smite2.com/images/T_Morgan_Le_Fay%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Morgan_Le_Fay",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "ne-zha",
+    "name": "Ne Zha",
+    "pantheon": "Chinese",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Third Lotus Prince",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2026-02-10",
+    "imageSource": "https://wiki.smite2.com/images/T_Ne_Zha%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ne_Zha",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "neith",
+    "name": "Neith",
+    "pantheon": "Egyptian",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Weaver of Fate",
+    "classes": [
+      "Hunter",
+      "Sharpshooter",
+      "Nuker"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Neith%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Neith",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "nemesis",
+    "name": "Nemesis",
+    "pantheon": "Greek",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Goddess of Vengeance",
+    "classes": [
+      "Assassin"
+    ],
+    "release": "2024-11-12",
+    "imageSource": "https://wiki.smite2.com/images/T_Nemesis%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Nemesis",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "nike",
+    "name": "Nike",
+    "pantheon": "Greek",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Goddess of Victory",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2026-10-06",
+    "imageSource": "https://wiki.smite2.com/images/T_Nike%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Nike",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "nox",
+    "name": "Nox",
+    "pantheon": "Roman",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of Night",
+    "classes": [
+      "Mage"
+    ],
+    "release": "2026-11-03",
+    "imageSource": "https://wiki.smite2.com/images/T_Nox%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Nox",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "nu-wa",
+    "name": "Nu Wa",
+    "pantheon": "Chinese",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Guardian of Heaven",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-09-17",
+    "imageSource": "https://wiki.smite2.com/images/T_Nu_Wa%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Nu_Wa",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "nut",
+    "name": "Nut",
+    "pantheon": "Egyptian",
+    "role": "Carry",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of the Sky",
+    "classes": [
+      "Hunter",
+      "Sharpshooter",
+      "Nuker"
+    ],
+    "release": "2025-12-16",
+    "imageSource": "https://wiki.smite2.com/images/T_Nut%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Nut",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "odin",
+    "name": "Odin",
+    "pantheon": "Norse",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Allfather",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Odin%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Odin",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "osiris",
+    "name": "Osiris",
+    "pantheon": "Egyptian",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Broken God of the Afterlife",
+    "classes": [
+      "Warrior",
+      "Brawler"
+    ],
+    "release": "2025-10-07",
+    "imageSource": "https://wiki.smite2.com/images/T_Osiris%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Osiris",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "pele",
+    "name": "Pele",
+    "pantheon": "Polynesian",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Goddess of Volcanoes",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2024-12-10",
+    "imageSource": "https://wiki.smite2.com/images/T_Pele%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Pele",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "poseidon",
+    "name": "Poseidon",
+    "pantheon": "Greek",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "God of the Oceans",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2024-11-25",
+    "imageSource": "https://wiki.smite2.com/images/T_Poseidon%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Poseidon",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "princess-bari",
+    "name": "Princess Bari",
+    "pantheon": "Korean",
+    "role": "Carry",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "The Divine Mudang",
+    "classes": [
+      "Hunter",
+      "Sharpshooter"
+    ],
+    "release": "2025-03-10",
+    "imageSource": "https://wiki.smite2.com/images/T_Princess_Bari%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Princess_Bari",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "ra",
+    "name": "Ra",
+    "pantheon": "Egyptian",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Sun God",
+    "classes": [
+      "Mage"
+    ],
+    "release": "2024-10-29",
+    "imageSource": "https://wiki.smite2.com/images/T_Ra%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ra",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "rama",
+    "name": "Rama",
+    "pantheon": "Hindu",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Seventh Avatar of Vishnu",
+    "classes": [
+      "Hunter",
+      "Sharpshooter"
+    ],
+    "release": "2025-02-10",
+    "imageSource": "https://wiki.smite2.com/images/T_Rama%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Rama",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "ratatoskr",
+    "name": "Ratatoskr",
+    "pantheon": "Norse",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Sly Messenger",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2026-04-07",
+    "imageSource": "https://wiki.smite2.com/images/T_Ratatoskr%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ratatoskr",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "ravana",
+    "name": "Ravana",
+    "pantheon": "Hindu",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Demon King of Lanka",
+    "classes": [
+      "Assassin",
+      "Brawler"
+    ],
+    "release": "2026-08-25",
+    "imageSource": "https://wiki.smite2.com/images/T_Ravana%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ravana",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "scylla",
+    "name": "Scylla",
+    "pantheon": "Greek",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Horror of the Sea",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2025-06-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Scylla_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Scylla",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "sobek",
+    "name": "Sobek",
+    "pantheon": "Egyptian",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "God of the Nile",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2024-10-29",
+    "imageSource": "https://wiki.smite2.com/images/T_Sobek%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Sobek",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "sol",
+    "name": "Sol",
+    "pantheon": "Norse",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of the Sun",
+    "classes": [
+      "Mage",
+      "Nuker",
+      "Sharpshooter"
+    ],
+    "release": "2024-05-30",
+    "imageSource": "https://wiki.smite2.com/images/T_Sol%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Sol",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "sun-wukong",
+    "name": "Sun Wukong",
+    "pantheon": "Chinese",
+    "role": "Solo",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "The Monkey King",
+    "classes": [
+      "Warrior",
+      "Brawler"
+    ],
+    "release": "2025-07-15",
+    "imageSource": "https://wiki.smite2.com/images/T_Sun_Wukong%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Sun_Wukong",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "susano",
+    "name": "Susano",
+    "pantheon": "Japanese",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "God of the Summer Storm",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2024-07-18",
+    "imageSource": "https://wiki.smite2.com/images/T_Susano%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Susano",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "sylvanus",
+    "name": "Sylvanus",
+    "pantheon": "Roman",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Keeper of the Wild",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2025-11-04",
+    "imageSource": "https://wiki.smite2.com/images/T_Sylvanus%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Sylvanus",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "thanatos",
+    "name": "Thanatos",
+    "pantheon": "Greek",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "Hand of Death",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2024-06-27",
+    "imageSource": "https://wiki.smite2.com/images/T_Thanatos%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Thanatos",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "the-morrigan",
+    "name": "The Morrigan",
+    "pantheon": "Celtic",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Phantom Queen",
+    "classes": [
+      "Mage",
+      "Nuker",
+      "Slayer"
+    ],
+    "release": "2024-06-27",
+    "imageSource": "https://wiki.smite2.com/images/T_The_Morrigan%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/The_Morrigan",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "thor",
+    "name": "Thor",
+    "pantheon": "Norse",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "God of Thunder",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2024-11-25",
+    "imageSource": "https://wiki.smite2.com/images/T_Thor%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Thor",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "tsukuyomi",
+    "name": "Tsukuyomi",
+    "pantheon": "Japanese",
+    "role": "Jungle",
+    "damage": "Physical",
+    "attack": "Melee Physical",
+    "title": "God of the Moon",
+    "classes": [
+      "Assassin",
+      "Slayer"
+    ],
+    "release": "2025-09-09",
+    "imageSource": "https://wiki.smite2.com/images/T_Tsukuyomi%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Tsukuyomi",
+    "placeholder": false,
+    "class": "Assassin"
+  },
+  {
+    "id": "ullr",
+    "name": "Ullr",
+    "pantheon": "Norse",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "The Glorious One",
+    "classes": [
+      "Hunter"
+    ],
+    "release": "2025-01-07",
+    "imageSource": "https://wiki.smite2.com/images/T_Ullr%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ullr",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "vulcan",
+    "name": "Vulcan",
+    "pantheon": "Roman",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Smith of the Gods",
+    "classes": [
+      "Mage",
+      "Nuker"
+    ],
+    "release": "2025-01-24",
+    "imageSource": "https://wiki.smite2.com/images/T_Vulcan%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Vulcan",
+    "placeholder": false,
+    "class": "Mage"
+  },
+  {
+    "id": "xbalanque",
+    "name": "Xbalanque",
+    "pantheon": "Maya",
+    "role": "Carry",
+    "damage": "Physical",
+    "attack": "Ranged Physical",
+    "title": "Hidden Jaguar Sun",
+    "classes": [
+      "Hunter"
+    ],
+    "release": "2025-09-23",
+    "imageSource": "https://wiki.smite2.com/images/T_Xbalanque%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Xbalanque",
+    "placeholder": false,
+    "class": "Hunter"
+  },
+  {
+    "id": "xing-tian",
+    "name": "Xing Tian",
+    "pantheon": "Chinese",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "The Relentless",
+    "classes": [
+      "Warrior",
+      "Brawler",
+      "Tank"
+    ],
+    "release": "2026-07-14",
+    "imageSource": "https://wiki.smite2.com/images/T_Xing_Tian%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Xing_Tian",
+    "placeholder": false,
+    "class": "Warrior"
+  },
+  {
+    "id": "yemoja",
+    "name": "Yemoja",
+    "pantheon": "Yoruba",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "Goddess of Rivers",
+    "classes": [
+      "Guardian",
+      "Tank"
+    ],
+    "release": "2024-10-03",
+    "imageSource": "https://wiki.smite2.com/images/T_Yemoja%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Yemoja",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "ymir",
+    "name": "Ymir",
+    "pantheon": "Norse",
+    "role": "Support",
+    "damage": "Magical",
+    "attack": "Melee Magical",
+    "title": "Father of the Frost Giants",
+    "classes": [
+      "Guardian",
+      "Tank",
+      "Brawler"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Ymir%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Ymir",
+    "placeholder": false,
+    "class": "Guardian"
+  },
+  {
+    "id": "zeus",
+    "name": "Zeus",
+    "pantheon": "Greek",
+    "role": "Mid",
+    "damage": "Magical",
+    "attack": "Ranged Magical",
+    "title": "God of the Sky",
+    "classes": [
+      "Mage",
+      "Nuker",
+      "Sharpshooter"
+    ],
+    "release": "2024-05-02",
+    "imageSource": "https://wiki.smite2.com/images/T_Zeus%28S2%29_Default_Icon.png",
+    "page": "https://wiki.smite2.com/w/Zeus",
+    "placeholder": false,
+    "class": "Mage"
+  }
+]

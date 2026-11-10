@@ -1,0 +1,13 @@
+{
+  "name": "smite2-draft",
+  "private": true,
+  "scripts": {
+    "build": "python3 src/build.py",
+    "test": "python3 src/build.py && node test.js",
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "jsdom": "^26.1.0",
+    "ws": "^8.18.3"
+  }
+}
