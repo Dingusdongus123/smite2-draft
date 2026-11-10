@@ -67,9 +67,41 @@ function toast(text) {
 function getName(id, fallback) { return $(id).value.trim().slice(0, 24) || fallback; }
 function localSide() { return mode === 'host' ? 'Order' : mode === 'guest' ? 'Chaos' : E.current(state)?.side; }
 function canAct() { return state.phase === 'draft' && (mode === 'local' || (connected && E.current(state)?.side === localSide())); }
+const CLOCK_KEY = 'crystal-draft-clock';
 function readConfig() {
   const num = (id, min, max) => Math.max(min, Math.min(max, Number($(id).value) || 0));
-  return { format: $('format').value, pickSeconds: num('pickSeconds', 5, 300), banSeconds: num('banSeconds', 5, 300), bankSeconds: num('bankSeconds', 0, 600), timeout: $('timeout').value };
+  return { format: $('format').value, pickSeconds: num('pickSeconds', 0, 300), banSeconds: num('banSeconds', 0, 300), bankSeconds: num('bankSeconds', 0, 600), timeout: $('timeout').value === 'skip' ? 'skip' : 'random' };
+}
+function clockText(config) {
+  const part = (label, seconds) => label + ' ' + (Number(seconds) > 0 ? seconds + 's' : 'off');
+  return part('Pick', config.pickSeconds) + ' · ' + part('Ban', config.banSeconds) + ' · Reserve ' + (Number(config.bankSeconds) > 0 ? config.bankSeconds + 's' : 'off');
+}
+function paintPresets() {
+  document.querySelectorAll('.presets').forEach(row => {
+    const value = String(Number($(row.dataset.clock).value));
+    row.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.seconds === value));
+  });
+}
+function applyConfigToInputs(config) {
+  if (!config) return;
+  $('pickSeconds').value = config.pickSeconds;
+  $('banSeconds').value = config.banSeconds;
+  $('bankSeconds').value = config.bankSeconds;
+  $('timeout').value = config.timeout === 'skip' ? 'skip' : 'random';
+  paintPresets();
+}
+function loadClock() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CLOCK_KEY) || 'null');
+    if (!saved) return;
+    applyConfigToInputs(saved);
+  } catch { /* ignore */ }
+}
+function publishClock() {
+  const config = readConfig();
+  try { localStorage.setItem(CLOCK_KEY, JSON.stringify({ pickSeconds: config.pickSeconds, banSeconds: config.banSeconds, bankSeconds: config.bankSeconds, timeout: config.timeout })); } catch { /* ignore */ }
+  if ($('clockLive')) $('clockLive').textContent = clockText(config);
+  if (mode === 'host' && connected && state.phase === 'lobby') send({ type: 'action', action: { type: 'clock', config } });
 }
 function healthUrl() { return ROOM_SERVER.replace(/^wss:/i, 'https:').replace(/^ws:/i, 'http:') + '/health'; }
 function resetFilters() { for (const id of ['search', 'roleFilter', 'pantheonFilter', 'damageFilter']) $(id).value = ''; }
@@ -419,6 +451,7 @@ function onMessage(m) {
   }
   if (m.type === 'state') {
     if (m.presence) presence = m.presence;
+    if (mounted() && (m.reason === 'clock' || mode === 'guest')) applyConfigToInputs(m.state.config);
     applyState(m.state, m.sentAt, m.reason);
     return;
   }
@@ -529,7 +562,8 @@ function renderSummary() {
         date: new Date().toISOString(),
         gods: state.actions.map(a => a.god || null),
         aspects: state.actions.map(a => !!(a.type === 'pick' && a.aspect)),
-        roles: state.actions.map(a => a.type === 'pick' ? { role: a.role || '', confirmed: !!a.roleConfirmed } : null)
+        roles: state.actions.map(a => a.type === 'pick' ? { role: a.role || '', confirmed: !!a.roleConfirmed } : null),
+        clock: { pickSeconds: state.config.pickSeconds, banSeconds: state.config.banSeconds, bankSeconds: state.config.bankSeconds, timeout: state.config.timeout }
       }, gods.map(g => g.id));
       rememberHistory({ id: currentDraftId, format: state.config.format, names: state.names, date: new Date().toISOString().slice(0, 10) }, previousDraftId);
       previousDraftId = currentDraftId;
@@ -718,6 +752,11 @@ function render() {
   else if (online) status = connected ? `● Connected · ${localSide()}` : '○ Waiting for connection · timer held';
   $('connectionStatus').textContent = status;
   $('connectionStatus').classList.toggle('waking', netPhase === 'waking');
+  const clockLocked = state.phase !== 'lobby';
+  ['pickSeconds', 'banSeconds', 'bankSeconds', 'timeout', 'format'].forEach(id => { if ($(id)) $(id).disabled = clockLocked; });
+  document.querySelectorAll('.presets button').forEach(btn => { btn.disabled = clockLocked; });
+  paintPresets();
+  if ($('clockLive')) $('clockLive').textContent = clockText((mode === 'host' || mode === 'guest') && state.config ? state.config : readConfig());
   renderEnter();
   renderRoomLine();
   renderSummary();
@@ -735,6 +774,15 @@ function tick(allowTimeout = true) {
     return;
   }
   const now = Date.now() + clockOffset;
+  const turnSeconds = Number(turn.type === 'ban' ? state.config.banSeconds : state.config.pickSeconds) || 0;
+  if (state.phase === 'draft' && !state.deadline && turnSeconds <= 0) {
+    $('clock').textContent = '—';
+    $('clock').classList.remove('urgent');
+    audio.lastTick = null;
+    const idleBank = $('bank' + turn.side);
+    if (idleBank) idleBank.textContent = Math.ceil(state.bank[turn.side]) + 's BANK';
+    return;
+  }
   const remaining = state.phase === 'paused' ? state.remaining / 1000 : (state.deadline - now) / 1000;
   const bank = state.bank[turn.side];
   const bankRemaining = Math.max(0, bank + Math.min(0, remaining));
@@ -899,6 +947,18 @@ function exportSummary() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+document.querySelectorAll('.presets').forEach(row => {
+  row.addEventListener('click', ev => {
+    const btn = ev.target.closest('button[data-seconds]');
+    if (!btn || btn.disabled) return;
+    $(row.dataset.clock).value = btn.dataset.seconds;
+    paintPresets();
+    publishClock();
+  });
+});
+['pickSeconds', 'banSeconds', 'bankSeconds', 'timeout'].forEach(id => {
+  $(id).addEventListener('change', () => { paintPresets(); publishClock(); });
+});
 $('enterBtn').onclick = () => {
   unlockAudio();
   if (mode === 'host') {
@@ -999,7 +1059,13 @@ function noteAssist(action) {
   if (document.hidden) flashTitle('Priority shifted · Crystal Draft');
 }
 function replayState(record, step) {
-  let next = E.create({ format: record.format, timeout: 'skip' });
+  let next = E.create({
+    format: record.format,
+    timeout: record.clock ? record.clock.timeout : 'skip',
+    pickSeconds: record.clock ? record.clock.pickSeconds : 40,
+    banSeconds: record.clock ? record.clock.banSeconds : 18,
+    bankSeconds: record.clock ? record.clock.bankSeconds : 90
+  });
   next.names = { Order: record.names.Order, Chaos: record.names.Chaos };
   const origin = Date.parse(record.date) || Date.UTC(2026, 0, 1);
   next = E.apply(next, { type: 'start' }, gods, origin);
@@ -1492,6 +1558,7 @@ document.addEventListener('click', event => {
 });
 
 function boot() {
+  loadClock();
   const replayQuery = new URLSearchParams(location.search).get('replay');
   if (replayQuery) { startReplay(replayQuery); prewarm(); return; }
   const code = codeFromLocation();

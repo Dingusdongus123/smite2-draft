@@ -22,8 +22,8 @@ function sanitizeConfig(input = {}) {
   };
   return {
     format: input.format === 'extended' ? 'extended' : 'standard',
-    pickSeconds: num(input.pickSeconds, 5, 300, 40),
-    banSeconds: num(input.banSeconds, 5, 300, 18),
+    pickSeconds: num(input.pickSeconds, 0, 300, 40),
+    banSeconds: num(input.banSeconds, 0, 300, 18),
     bankSeconds: num(input.bankSeconds, 0, 600, 90),
     timeout: input.timeout === 'skip' ? 'skip' : 'random'
   };
@@ -308,6 +308,11 @@ function createApp(options = {}) {
         send(ws, { type: 'notice', message: 'You can only assign roles for your own team.' });
         return;
       }
+    } else if (action.type === 'clock') {
+      if (meta.side !== 'Order') {
+        send(ws, { type: 'notice', message: 'Only the host can set the clock.' });
+        return;
+      }
     } else {
       send(ws, { type: 'notice', message: 'Unknown action.' });
       return;
@@ -345,8 +350,11 @@ function createApp(options = {}) {
       return;
     }
 
+    const applied = action.type === 'clock'
+      ? { type: 'clock', config: sanitizeConfig({ ...room.state.config, ...action.config }) }
+      : action;
     try {
-      room.state = Engine.apply(room.state, action, roster, Date.now());
+      room.state = Engine.apply(room.state, applied, roster, Date.now());
     } catch (error) {
       send(ws, { type: 'notice', message: error.message });
       return;
@@ -480,7 +488,7 @@ function createApp(options = {}) {
       const turn = Engine.current(room.state);
       if (!turn) continue;
       const bank = room.state.bank[turn.side] || 0;
-      if (now < room.state.deadline + bank * 1000) continue;
+      if (!room.state.deadline || now < room.state.deadline + bank * 1000) continue;
       const used = Engine.used(room.state);
       let god = null;
       if (room.state.config.timeout !== 'skip') {
