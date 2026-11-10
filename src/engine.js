@@ -9,6 +9,7 @@ const DRAFT_ORDERS={
  standard:[...OPEN_BANS,...make('pick','OCCOOCCOOC')],
  extended:[...OPEN_BANS,...FIRST_PICKS,...make('ban','COCO'),...make('pick','COOC')]
 };
+const ROLES=['Solo','Jungle','Mid','Carry','Support'];
 const copy=x=>JSON.parse(JSON.stringify(x));
 function create(config={}){return{version:1,rev:0,phase:'lobby',step:0,actions:[],history:[],config:{format:'standard',pickSeconds:40,banSeconds:18,bankSeconds:90,timeout:'random',...config},names:{Order:'Order captain',Chaos:'Chaos captain'},bank:{Order:config.bankSeconds??90,Chaos:config.bankSeconds??90},deadline:0,remaining:0};}
 function current(s){return DRAFT_ORDERS[s.config.format][s.step]||null;}
@@ -42,6 +43,24 @@ function apply(s,a,roster,now=Date.now()){
   const god=(roster||[]).find(g=>g.id===a.god);
   if(!god||!god.aspect)throw Error('That god has no aspect');
   pick.aspect=!!a.on;
+ }else if(a.type==='roles'){
+  if(n.phase!=='summary')throw Error('Roles are assigned after the draft');
+  if(a.side!=='Order'&&a.side!=='Chaos')throw Error('Unknown side');
+  const picks=n.actions.filter(x=>x.type==='pick'&&x.side===a.side);
+  if(!Array.isArray(a.roles)||a.roles.length!==picks.length)throw Error('Each team assigns five roles');
+  const seen={};
+  a.roles.forEach(entry=>{
+    const role=entry&&entry.role||'';
+    if(!role)return;
+    if(ROLES.indexOf(role)<0)throw Error('Unknown role');
+    if(seen[role])throw Error('Each role is used once');
+    seen[role]=true;
+  });
+  picks.forEach((pick,i)=>{
+    const entry=a.roles[i]||{};
+    pick.role=entry.role||'';
+    pick.roleConfirmed=!!(entry.role&&entry.confirmed);
+  });
  }else if(a.type==='undo'){
   if(!n.history.length)throw Error('Nothing to undo');
   const kept=new Map(n.actions.filter(x=>x.aspect&&x.god).map(x=>[x.side+'\0'+x.god,true]));
@@ -52,6 +71,6 @@ function apply(s,a,roster,now=Date.now()){
  }else throw Error('Unknown action');
  n.rev=s.rev+1;return n;
 }
-const api={DRAFT_ORDERS,create,current,used,apply,base};
+const api={DRAFT_ORDERS,ROLES,create,current,used,apply,base};
 if(typeof module!=='undefined')module.exports=api;root.DraftEngine=api;
 })(typeof window==='undefined'?globalThis:window);

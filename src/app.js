@@ -40,6 +40,10 @@ let presence = { Order: false, Chaos: false };
 let clockOffset = 0;
 let turnKey = '';
 let seenSummary = -1;
+let previousDraftId = '';
+let armedRole = null;
+let showRoleStats = false;
+const roleSeeded = { Order: false, Chaos: false };
 let replayRecord = null;
 let replayStep = 0;
 let replayTimer = null;
@@ -453,7 +457,9 @@ function slotHTML(a, i, side) {
     const button = aspect
       ? `<button type="button" class="aspect-btn ${a.aspect ? 'on' : ''}" data-aspect="${esc(g.id)}" data-side="${side}" title="${esc(aspect.name + ' — ' + aspect.description)}" aria-pressed="${a.aspect ? 'true' : 'false'}" aria-label="${esc((a.aspect ? 'Aspect on: ' : 'Toggle ') + aspect.name)}" ${canToggleAspect(side) ? '' : 'disabled'}></button>`
       : '';
-    return `<div class="slot"><div class="face ${a.aspect ? 'aspected' : ''}">${picture(g)}${button}</div><div class="slottext"><strong>${esc(g.name)}</strong><small>${esc(g.role)} · ${esc(g.damage)}</small></div></div>`;
+    const showRole = state.phase === 'summary' || mode === 'replay';
+    const tag = showRole ? `<span class="role-tag ${a.role ? (a.roleConfirmed ? 'set' : 'hint') : ''}">${a.role ? esc(roleLabel(a.role) + (a.roleConfirmed ? '' : ' · suggested')) : (canAssign(side) ? 'Choose role' : '')}</span>` : '';
+    return `<div class="slot" data-role-pick="${i}" data-role-side="${side}"><div class="face ${a.aspect ? 'aspected' : ''}">${picture(g)}${button}</div><div class="slottext"><strong>${esc(g.name)}</strong><small>${esc(g.role)} · ${esc(g.damage)}</small></div>${tag}</div>`;
   }
   const upcoming = E.current(state)?.type === 'pick' && E.current(state)?.side === side && i === state.actions.filter(x => x.side === side && x.type === 'pick').length && state.phase === 'draft';
   return `<div class="slot empty ${upcoming ? 'upcoming' : ''}"><b>${String(i + 1).padStart(2, '0')}</b>${a ? 'PASSED ON TIMEOUT' : 'Awaiting selection'}</div>`;
@@ -476,7 +482,7 @@ function renderTeam(side) {
   const panel = $(side.toLowerCase() + 'Team');
   const banCount = state.config.format === 'extended' ? 5 : 3;
   panel.classList.toggle('active', E.current(state)?.side === side && state.phase === 'draft');
-  panel.innerHTML = `<div class="teamhead"><div><h2>${side.toUpperCase()}</h2><div class="captain">${esc(state.names[side])}${mode !== 'local' && mode !== 'replay' && localSide() === side ? ' · YOU' : ''}</div></div><div class="sigil"><i></i></div></div>${Array.from({ length: 5 }, (_, i) => slotHTML(picks[i], i, side)).join('')}<div class="banlabel"><span>THE EXILED</span><span>${state.actions.filter(a => a.side === side && a.type === 'ban').length}/${banCount}</span></div><div class="bans">${bansHTML(side)}</div><div class="teamfoot"><span>${side === 'Order' ? 'FIRST PICK' : 'COUNTER PICK'}</span><span id="bank${side}">${Math.ceil(state.bank[side])}s BANK</span></div>`;
+  panel.innerHTML = `<div class="teamhead"><div><h2>${side.toUpperCase()}</h2><div class="captain">${esc(state.names[side])}${mode !== 'local' && mode !== 'replay' && localSide() === side ? ' · YOU' : ''}</div></div><div class="sigil"><i></i></div></div>${roleRow(side)}${Array.from({ length: 5 }, (_, i) => slotHTML(picks[i], i, side)).join('')}<div class="banlabel"><span>THE EXILED</span><span>${state.actions.filter(a => a.side === side && a.type === 'ban').length}/${banCount}</span></div><div class="bans">${bansHTML(side)}</div><div class="teamfoot"><span>${side === 'Order' ? 'FIRST PICK' : 'COUNTER PICK'}</span><span id="bank${side}">${Math.ceil(state.bank[side])}s BANK</span></div>`;
 }
 function filteredGods() {
   const term = $('search').value.toLowerCase().trim();
@@ -512,7 +518,7 @@ function showPreview(id) {
 }
 function renderSummary() {
   if (state.phase !== 'summary' || mode === 'replay') { if (mode !== 'replay') $('summaryModal').hidden = true; return; }
-  $('summaryTeams').innerHTML = ['Order', 'Chaos'].map(side => `<div class="summary-team"><h3>${side.toUpperCase()} · ${esc(state.names[side])}</h3>${state.actions.filter(a => a.side === side && a.type === 'pick').map((a, i) => slotHTML(a, i, side)).join('')}<div class="banlabel">BANS</div><div class="bans">${bansHTML(side)}</div></div>`).join('');
+  $('summaryTeams').innerHTML = ['Order', 'Chaos'].map(side => `<div class="summary-team"><h3>${side.toUpperCase()} · ${esc(state.names[side])}</h3>${roleRow(side)}${state.actions.filter(a => a.side === side && a.type === 'pick').map((a, i) => slotHTML(a, i, side)).join('')}<div class="banlabel">BANS</div><div class="bans">${bansHTML(side)}</div></div>`).join('');
   $('restartBtn').disabled = mode === 'guest';
   $('restartBtn').textContent = mode === 'guest' ? 'Waiting for host' : 'Draft again →';
   if (seenSummary !== state.rev) {
@@ -522,9 +528,11 @@ function renderSummary() {
         names: state.names,
         date: new Date().toISOString(),
         gods: state.actions.map(a => a.god || null),
-        aspects: state.actions.map(a => !!(a.type === 'pick' && a.aspect))
+        aspects: state.actions.map(a => !!(a.type === 'pick' && a.aspect)),
+        roles: state.actions.map(a => a.type === 'pick' ? { role: a.role || '', confirmed: !!a.roleConfirmed } : null)
       }, gods.map(g => g.id));
-      rememberHistory({ id: currentDraftId, format: state.config.format, names: state.names, date: new Date().toISOString().slice(0, 10) });
+      rememberHistory({ id: currentDraftId, format: state.config.format, names: state.names, date: new Date().toISOString().slice(0, 10) }, previousDraftId);
+      previousDraftId = currentDraftId;
     } catch (error) { currentDraftId = ''; toast(error.message); }
     $('summaryModal').hidden = false;
     seenSummary = state.rev;
@@ -596,8 +604,88 @@ function renderRoomLine() {
   }
   if (!room && state.phase === 'lobby' && !failNote) $('roomInfo').textContent = '';
 }
+function canAssign(side) {
+  if (mode === 'replay' || state.phase !== 'summary') return false;
+  if (mode === 'local') return true;
+  return connected && localSide() === side;
+}
+function roleRow(side) {
+  if (state.phase !== 'summary' && mode !== 'replay') return '';
+  const can = canAssign(side);
+  const used = new Set(state.actions.filter(a => a.type === 'pick' && a.side === side && a.role).map(a => a.role));
+  const chips = DraftCodec.ROLES.map(role => `<button type="button" class="role-chip ${used.has(role) ? 'used' : ''} ${armedRole && armedRole.side === side && armedRole.role === role ? 'armed' : ''}" draggable="${can ? 'true' : 'false'}" data-role="${role}" data-side="${side}" ${can ? '' : 'disabled'}>${roleIcon(role)}${esc(roleLabel(role))}</button>`).join('');
+  return `<div class="role-row" data-side="${side}">${chips}</div>`;
+}
+function guessRoles(side) {
+  const picks = state.actions.filter(a => a.type === 'pick' && a.side === side);
+  const savedPlan = loadPlans().find(item => item.id === assistPlanId);
+  const plan = savedPlan ? adoptPlan(savedPlan) : null;
+  const usePlan = plan && side === assistedSide();
+  const taken = new Set();
+  const roles = picks.map(() => ({ role: '', confirmed: false }));
+  if (usePlan) {
+    picks.forEach((pick, index) => {
+      if (!pick.god) return;
+      let best = null;
+      DraftCodec.ROLES.forEach(role => {
+        const list = plan.roles && plan.roles[role] || [];
+        const rank = list.indexOf(pick.god);
+        if (rank < 0 || taken.has(role)) return;
+        if (!best || rank < best.rank) best = { role, rank };
+      });
+      if (best) { roles[index] = { role: best.role, confirmed: false }; taken.add(best.role); }
+    });
+  }
+  picks.forEach((pick, index) => {
+    if (roles[index].role || !pick.god) return;
+    const primary = byId[pick.god] && byId[pick.god].role;
+    if (primary && DraftCodec.ROLES.includes(primary) && !taken.has(primary)) {
+      roles[index] = { role: primary, confirmed: false };
+      taken.add(primary);
+    }
+  });
+  return roles;
+}
+function writeRoles(side, roles) {
+  const action = { type: 'roles', side, roles };
+  if (mode === 'local') {
+    state = E.apply(state, action, gods);
+    return true;
+  }
+  if (connected) send({ type: 'action', action });
+  return false;
+}
+function maybeSeedRoles() {
+  if (state.phase !== 'summary' || mode === 'replay') return false;
+  let changed = false;
+  ['Order', 'Chaos'].forEach(side => {
+    if (!canAssign(side) || roleSeeded[side]) return;
+    const picks = state.actions.filter(a => a.type === 'pick' && a.side === side);
+    if (!picks.length || picks.some(pick => pick.role)) { roleSeeded[side] = true; return; }
+    roleSeeded[side] = true;
+    changed = writeRoles(side, guessRoles(side)) || changed;
+  });
+  return changed;
+}
+function dropRole(side, index, role) {
+  if (!canAssign(side) || !DraftCodec.ROLES.includes(role)) return;
+  const picks = state.actions.filter(a => a.type === 'pick' && a.side === side);
+  if (!picks[index]) return;
+  const roles = picks.map(pick => ({ role: pick.role || '', confirmed: !!pick.roleConfirmed }));
+  if (roles[index].role === role) {
+    roles[index].confirmed = true;
+  } else {
+    const from = roles.findIndex((entry, i) => entry.role === role && i !== index);
+    const previous = roles[index].role;
+    roles[index] = { role, confirmed: true };
+    if (from >= 0) roles[from] = previous ? { role: previous, confirmed: true } : { role: '', confirmed: false };
+  }
+  if (writeRoles(side, roles)) render();
+}
 function render() {
   if (!mounted()) return;
+  if (state.phase === 'lobby') { roleSeeded.Order = false; roleSeeded.Chaos = false; }
+  if (maybeSeedRoles()) return render();
   const turn = E.current(state);
   const lobby = state.phase === 'lobby';
   $('lobby').style.display = lobby ? 'grid' : 'none';
@@ -749,6 +837,10 @@ function resetLocal() {
   audio.lastTick = null;
   state = E.create();
   seenSummary = -1;
+  previousDraftId = '';
+  armedRole = null;
+  roleSeeded.Order = false;
+  roleSeeded.Chaos = false;
   resetFilters();
   setTab('local');
   render();
@@ -784,7 +876,18 @@ function exportSummary() {
   const lines = ['CRYSTAL DRAFT — SMITE 2', `Format: ${state.config.format}`, ''];
   for (const side of ['Order', 'Chaos']) {
     lines.push(`${side} — ${state.names[side]}`);
-    for (const type of ['pick', 'ban']) lines.push(`${type.toUpperCase()}S: ` + state.actions.filter(a => a.side === side && a.type === type).map(a => a.god ? byId[a.god].name + (a.aspect && byId[a.god].aspect ? ' (' + byId[a.god].aspect.name + ')' : '') : '[timeout pass]').join(', '));
+    for (const type of ['pick', 'ban']) lines.push(`${type.toUpperCase()}S: ` + state.actions.filter(a => a.side === side && a.type === type).map(a => {
+      if (!a.god) return '[timeout pass]';
+      let name = byId[a.god].name;
+      if (a.aspect && byId[a.god].aspect) name += ' (' + byId[a.god].aspect.name + ')';
+      if (type === 'pick' && a.role) name += ' [' + roleLabel(a.role) + (a.roleConfirmed ? '' : ', suggested') + ']';
+      return name;
+    }).join(', '));
+    lines.push('JSON: ' + JSON.stringify({
+      format: state.config.format,
+      names: state.names,
+      picks: state.actions.filter(a => a.type === 'pick').map(a => ({ side: a.side, god: a.god, role: a.role || '', suggested: !!(a.role && !a.roleConfirmed) }))
+    }));
     lines.push('');
   }
   const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
@@ -877,8 +980,8 @@ function heartbeat() {
   if (heartbeats % 9 === 0 && connected && typeof fetch === 'function') fetch(healthUrl(), { cache: 'no-store' }).catch(() => {});
 }
 function loadHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; } }
-function rememberHistory(entry) {
-  const list = loadHistory().filter(item => item.id !== entry.id);
+function rememberHistory(entry, replaceId) {
+  const list = loadHistory().filter(item => item.id !== entry.id && item.id !== replaceId);
   list.unshift(entry);
   try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 40))); } catch { /* ignore */ }
 }
@@ -907,6 +1010,12 @@ function replayState(record, step) {
     next = E.apply(next, { type: 'commit', side: turn.side, god: god, timeout: god == null, rev: next.rev }, gods, next.deadline || origin);
     if (record.aspects && record.aspects[i] && turn.type === 'pick' && god) {
       next = E.apply(next, { type: 'aspect', side: turn.side, god: god, on: true }, gods, next.deadline || origin);
+    }
+    const assigned = record.roles && record.roles[i];
+    if (assigned && assigned.role && turn.type === 'pick') {
+      const placed = next.actions[next.actions.length - 1];
+      placed.role = assigned.role;
+      placed.roleConfirmed = !!assigned.confirmed;
     }
   }
   return next;
@@ -961,7 +1070,68 @@ function renderReplay() {
 }
 function renderHistory() {
   const list = loadHistory();
-  $('historyList').innerHTML = list.length ? list.map(item => `<div class="history-row"><div><strong>${esc(item.names.Order)} vs ${esc(item.names.Chaos)}</strong><div class="muted">${esc(item.format)} · ${esc(item.date)}</div><code>${esc(item.id)}</code></div><div class="plan-tools"><button type="button" data-copy-draft="${esc(item.id)}">Copy</button><button type="button" data-watch="${esc(item.id)}">Replay</button><button type="button" data-forget="${esc(item.id)}">Delete</button></div></div>`).join('') : '<p class="muted">Finished drafts are listed here with their IDs.</p>';
+  $('historyList').innerHTML = list.length ? list.map(item => `<div class="history-row"><div><strong>${esc(item.names.Order)} vs ${esc(item.names.Chaos)}</strong><div class="muted">${esc(item.format)} · ${esc(item.date)}</div><div class="muted">${esc(historyRoles(item.id))}</div><code>${esc(item.id)}</code></div><div class="plan-tools"><button type="button" data-copy-draft="${esc(item.id)}">Copy</button><button type="button" data-watch="${esc(item.id)}">Replay</button><button type="button" data-forget="${esc(item.id)}">Delete</button></div></div>`).join('') : '<p class="muted">Finished drafts are listed here with their IDs.</p>';
+  renderRoleStats();
+}
+function historyRoles(id) {
+  try {
+    const record = DraftCodec.decodeDraft(id, gods.map(g => g.id));
+    const steps = DraftCodec.orderedActions(record, E.DRAFT_ORDERS);
+    return ['Order', 'Chaos'].map(side => side + ' ' + steps.filter(step => step.side === side && step.type === 'pick').map(step => {
+      const name = step.god ? (byId[step.god] ? byId[step.god].name : step.god) : 'Pass';
+      return step.role ? name + ' ' + roleLabel(step.role) + (step.roleConfirmed ? '' : ' ?') : name;
+    }).join(', ')).join(' · ');
+  } catch { return ''; }
+}
+function roleTallies() {
+  const tally = {};
+  DraftCodec.ROLES.forEach(role => { tally[role] = {}; });
+  loadHistory().forEach(item => {
+    let record;
+    try { record = DraftCodec.decodeDraft(item.id, gods.map(g => g.id)); }
+    catch { return; }
+    DraftCodec.orderedActions(record, E.DRAFT_ORDERS).forEach(step => {
+      if (step.type !== 'pick' || !step.god || !step.role || !tally[step.role]) return;
+      const row = tally[step.role][step.god] || { total: 0, Order: 0, Chaos: 0 };
+      row.total += 1;
+      row[step.side] += 1;
+      tally[step.role][step.god] = row;
+    });
+  });
+  return tally;
+}
+function renderRoleStats() {
+  const box = $('roleStats');
+  if (!box) return;
+  box.hidden = !showRoleStats;
+  if (!showRoleStats) return;
+  const tally = roleTallies();
+  const plans = loadPlans();
+  const body = DraftCodec.ROLES.map(role => {
+    const rows = Object.entries(tally[role]).sort((a, b) => b[1].total - a[1].total);
+    const lines = rows.length ? rows.map(([id, row]) => `<p>${esc(byId[id] ? byId[id].name : id)} · ${row.total} <span class="muted">Order ${row.Order} · Chaos ${row.Chaos}</span></p>`).join('') : '<p class="muted">No assigned picks yet.</p>';
+    return `<h3>${esc(roleLabel(role))}</h3>${lines}`;
+  }).join('');
+  box.innerHTML = body + `<div class="plan-tools"><label class="muted">Plan <select id="statsPlan">${plans.map(plan => `<option value="${esc(plan.id)}">${esc(plan.name)}</option>`).join('')}<option value="">New plan from stats</option></select></label><button type="button" id="statsMerge">Merge into plan</button></div>`;
+}
+function mergeStatsIntoPlan() {
+  const tally = roleTallies();
+  const selected = $('statsPlan') ? $('statsPlan').value : '';
+  const existing = selected ? loadPlans().find(plan => plan.id === selected) : null;
+  const plan = existing ? adoptPlan(existing) : blankPlan();
+  if (!existing) plan.name = 'Role stats';
+  DraftCodec.ROLES.forEach(role => {
+    const ranked = Object.entries(tally[role]).sort((a, b) => b[1].total - a[1].total).map(([id]) => id);
+    const have = plan.roles[role] || [];
+    ranked.forEach(id => { if (!have.includes(id) && have.length < DraftCodec.PLAN_LIMIT) have.push(id); });
+    plan.roles[role] = have;
+  });
+  const list = loadPlans().filter(item => item.id !== plan.id);
+  list.unshift(plan);
+  savePlans(list);
+  editingPlan = plan;
+  toast(existing ? 'Role stats merged into ' + plan.name + '.' : 'Saved a plan from role stats.');
+  renderRoleStats();
 }
 function copyText(text, okMessage) {
   if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => toast(okMessage), () => toast(text));
@@ -1107,6 +1277,43 @@ function renderAssist() {
 
 $('historyBtn').onclick = () => { renderHistory(); $('historyModal').hidden = false; };
 $('closeHistory').onclick = () => { $('historyModal').hidden = true; };
+$('roleStatsBtn').onclick = () => { showRoleStats = !showRoleStats; renderHistory(); };
+document.addEventListener('click', event => {
+  if (event.target.closest('.aspect-btn')) return;
+  const chip = event.target.closest('.role-chip');
+  if (chip && !chip.disabled) {
+    const next = { side: chip.dataset.side, role: chip.dataset.role };
+    armedRole = armedRole && armedRole.side === next.side && armedRole.role === next.role ? null : next;
+    render();
+    return;
+  }
+  const pick = event.target.closest('[data-role-pick]');
+  if (!pick || !armedRole || armedRole.side !== pick.dataset.roleSide) return;
+  const side = pick.dataset.roleSide;
+  const role = armedRole.role;
+  armedRole = null;
+  dropRole(side, Number(pick.dataset.rolePick), role);
+});
+document.addEventListener('dragstart', event => {
+  const chip = event.target.closest('.role-chip');
+  if (!chip || chip.disabled || !event.dataTransfer) return;
+  event.dataTransfer.setData('text/plain', chip.dataset.side + ':' + chip.dataset.role);
+  event.dataTransfer.effectAllowed = 'move';
+});
+document.addEventListener('dragover', event => {
+  if (event.target.closest('[data-role-pick]')) event.preventDefault();
+});
+document.addEventListener('drop', event => {
+  const pick = event.target.closest('[data-role-pick]');
+  if (!pick || !event.dataTransfer) return;
+  const parts = event.dataTransfer.getData('text/plain').split(':');
+  if (parts[0] !== pick.dataset.roleSide) return;
+  event.preventDefault();
+  dropRole(parts[0], Number(pick.dataset.rolePick), parts[1]);
+});
+document.addEventListener('click', event => {
+  if (event.target && event.target.id === 'statsMerge') mergeStatsIntoPlan();
+});
 $('historyList').onclick = event => {
   const copy = event.target.closest('[data-copy-draft]');
   const watch = event.target.closest('[data-watch]');

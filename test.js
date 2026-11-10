@@ -167,6 +167,23 @@ function unit() {
   ok(draft.actions.find(a => a.type === 'pick' && a.god === aspectGod.id).aspect === true, 'Undo keeps an aspect on a pick that remains');
   draft = E.apply(draft, { type: 'aspect', side: pickTurn.side, god: aspectGod.id, on: false }, roster, 8);
   ok(draft.actions.find(a => a.type === 'pick' && a.god === aspectGod.id).aspect === false, 'An aspect can be turned off');
+  while (draft.phase === 'draft') {
+    const turn = E.current(draft);
+    const god = roster.find(g => !draft.actions.some(a => a.god === g.id)).id;
+    draft = E.apply(draft, { type: 'commit', side: turn.side, god, rev: draft.rev }, roster, 9);
+  }
+  draft = E.apply(draft, { type: 'roles', side: 'Order', roles: [
+    { role: 'Solo', confirmed: true }, { role: 'Jungle', confirmed: true }, { role: 'Mid', confirmed: false },
+    { role: 'Carry', confirmed: true }, { role: 'Support', confirmed: true }
+  ] }, roster, 10);
+  const orderPicks = draft.actions.filter(a => a.side === 'Order' && a.type === 'pick');
+  ok(orderPicks[0].role === 'Solo' && orderPicks[0].roleConfirmed === true && orderPicks[2].role === 'Mid' && orderPicks[2].roleConfirmed === false, 'A team can assign roles after the draft');
+  assert.throws(() => E.apply(draft, { type: 'roles', side: 'Order', roles: [
+    { role: 'Solo', confirmed: true }, { role: 'Solo', confirmed: true }, { role: 'Mid', confirmed: true },
+    { role: 'Carry', confirmed: true }, { role: 'Support', confirmed: true }
+  ] }, roster, 11));
+  checks += 1;
+  console.log('PASS', 'A role cannot be used twice on one team');
 }
 
 function local() {
@@ -216,6 +233,12 @@ function local() {
   ok(new Set(s.actions.map(a => a.god)).size === 16, 'No duplicate picks or bans');
   ok(['Order', 'Chaos'].every(side => s.actions.filter(a => a.side === side && a.type === 'pick').length === 5 && s.actions.filter(a => a.side === side && a.type === 'ban').length === 3), 'Standard team counts');
   ok(!el(d, 'summaryModal').hidden && el(d, 'summaryTeams').querySelectorAll('.ban.filled .banname').length === 6, 'Summary ban slots are named');
+  ok(el(d, 'summaryTeams').querySelectorAll('.role-chip').length === 10, 'Each team gets five role chips');
+  ok(/suggested/.test(el(d, 'summaryTeams').textContent), 'Primary roles start as suggestions');
+  el(d, 'summaryTeams').querySelector('.role-chip[data-side="Order"][data-role="Solo"]').click();
+  el(d, 'summaryTeams').querySelector('[data-role-side="Order"][data-role-pick="0"]').click();
+  const firstPick = get(d).actions.find(a => a.side === 'Order' && a.type === 'pick');
+  ok(firstPick.role === 'Solo' && firstPick.roleConfirmed === true, 'Tapping a role then a pick confirms it');
   const aspectBtn = el(d, 'summaryTeams').querySelector('.aspect-btn');
   ok(aspectBtn && aspectBtn.getAttribute('title').includes('Aspect of'), 'A picked god with an aspect shows the yellow toggle');
   aspectBtn.click();
@@ -467,6 +490,23 @@ async function serverProtocol() {
   ok(JSON.stringify(guestBag.latest()) === JSON.stringify(current), 'Guest ends on the server\'s final state');
   ok(JSON.stringify(host2Bag.latest()) === JSON.stringify(current), 'Reconnected host ends on the same final state');
   ok(new Set(current.actions.map(a => a.god)).size === 16, 'Server draft has no duplicate gods');
+  const roleRev = current.rev + 1;
+  const hostRoles = once(orderSocket, m => m.type === 'state' && m.state.rev === roleRev);
+  const guestRoles = once(guest, m => m.type === 'state' && m.state.rev === roleRev);
+  orderSocket.send(JSON.stringify({ type: 'action', action: { type: 'roles', side: 'Order', roles: [
+    { role: 'Solo', confirmed: true }, { role: 'Jungle', confirmed: true }, { role: 'Mid', confirmed: true },
+    { role: 'Carry', confirmed: true }, { role: 'Support', confirmed: true }
+  ] } }));
+  const [hostRoleState, guestRoleState] = await Promise.all([hostRoles, guestRoles]);
+  ok(hostRoleState.state.actions.find(a => a.side === 'Order' && a.type === 'pick').role === 'Solo', 'The server stores the host role assignment');
+  ok(JSON.stringify(hostRoleState.state) === JSON.stringify(guestRoleState.state), 'The guest sees the host roles live');
+  const roleDenied = once(guest, m => m.type === 'notice');
+  guest.send(JSON.stringify({ type: 'action', action: { type: 'roles', side: 'Order', roles: [
+    { role: 'Support', confirmed: true }, { role: 'Carry', confirmed: true }, { role: 'Mid', confirmed: true },
+    { role: 'Jungle', confirmed: true }, { role: 'Solo', confirmed: true }
+  ] } }));
+  ok(/own team/i.test((await roleDenied).message), 'The other captain cannot assign host roles');
+  current = hostRoleState.state;
   const aspectPick = current.actions.find(a => a.type === 'pick' && a.side === 'Order' && roster.some(g => g.id === a.god && g.aspect));
   ok(aspectPick, 'The finished server draft has an Order pick with an aspect');
   const aspectRev = current.rev + 1;
