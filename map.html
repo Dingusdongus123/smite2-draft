@@ -8,38 +8,35 @@
 <style>
 :root{--bg:#070d1b;--panel:#101c30d9;--edge:#a4dfff29;--cyan:#8ceeff;--violet:#c9a6ff;--muted:#8dabc3;--ink:#edf8ff;--danger:#ff5d7a;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg)}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 10% 0,#14314e 0,transparent 42%),radial-gradient(ellipse at 100% 40%,#271b4a 0,transparent 45%),#070d1b}body:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(122deg,transparent 19%,#a4eaff06 19.1%,transparent 35%),linear-gradient(54deg,transparent 68%,#a4eaff08 68.1%,transparent 79%)}
-button,input{font:inherit}button{cursor:pointer}a{color:var(--cyan);text-decoration:none}
+button,input,select{font:inherit}button{cursor:pointer}a{color:var(--cyan);text-decoration:none}
 .topbar{height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--edge);gap:12px}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}.gem{width:26px;height:34px;background:conic-gradient(from 25deg,#d7fcff,#5fb4d6,#e6caff,#6f8be5,#d7fcff);clip-path:polygon(50% 0,100% 30%,80% 80%,50% 100%,10% 68%,0 30%)}
 .badge{font-size:10px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--edge);padding:5px 8px;border-radius:5px}
-.topright{display:flex;align-items:center;gap:12px}.textbtn{background:transparent;border:0;color:var(--muted);padding:6px;font-size:12px}
+.topright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.textbtn{background:transparent;border:0;color:var(--muted);padding:6px;font-size:12px}
 .sound-toggle{display:inline-flex;align-items:center;gap:8px;margin:0;padding:7px 12px;border:1px solid #8ceeff66;border-radius:999px;background:linear-gradient(120deg,#8ceeff18,#ba9cff12);color:var(--ink);font-size:12px;font-weight:650;cursor:pointer;white-space:nowrap}
 .sound-toggle input{width:16px;height:16px;margin:0;accent-color:#8ceeff}
-.layout{display:grid;grid-template-columns:250px minmax(320px,1fr) 280px;gap:14px;padding:14px;align-items:start}
-.panel{border:1px solid var(--edge);background:linear-gradient(130deg,#b3dfff0c,#b3c0ff03),var(--panel);border-radius:14px;padding:14px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;padding:14px;height:calc(100vh - 74px)}
+.panel{border:1px solid var(--edge);background:linear-gradient(130deg,#b3dfff0c,#b3c0ff03),var(--panel);border-radius:14px;padding:14px;overflow:auto}
 h1,h2,p{margin:0}h1{font-size:15px;letter-spacing:1px}h2{font-size:12px;letter-spacing:1px;color:var(--cyan);text-transform:uppercase;margin:14px 0 8px}
 .muted{color:var(--muted);font-size:12px;line-height:1.5}.src{font-size:11px;color:var(--muted);word-break:break-word}
-.sides,.tools,.wardlist{display:flex;flex-wrap:wrap;gap:6px}.sides button,.tools button,.wardlist button,.actions button{border:1px solid var(--edge);background:#0b1525;color:var(--ink);border-radius:8px;padding:8px 10px;font-size:12px}
+.sides,.tools,.wardlist,.actions{display:flex;flex-wrap:wrap;gap:6px}
+.sides button,.tools button,.wardlist button,.actions button{border:1px solid var(--edge);background:#0b1525;color:var(--ink);border-radius:8px;padding:8px 10px;font-size:12px}
 button.active{border-color:#8ceeff99;color:var(--cyan);background:#13283a}
-button.chaos.active{border-color:#c9a6ff99;color:var(--violet)}
-.swatches{display:flex;gap:6px;flex-wrap:wrap}.swatch{width:22px;height:22px;border-radius:50%;border:2px solid transparent;padding:0}.swatch.active{border-color:#fff}
-label.brush{display:block;font-size:11px;color:var(--muted);margin-top:8px}input[type=range]{width:100%}
-.stage{min-width:0}.stage svg{width:100%;height:auto;background:#070d1b;border-radius:16px;border:1px solid var(--edge);touch-action:none;display:block}
-.ground{fill:#121c2e;stroke:#a4dfff33;stroke-width:3}.lane{fill:none;stroke:#8ceeff22;stroke-width:18;stroke-linecap:round}.lane.duo{stroke:#9dffce18}.lane.solo{stroke:#ffb15a18}
-.pit{fill:#0000;stroke-width:2}.pit.gold{stroke:#ffe08a88;fill:#ffe08a14}.pit.fire{stroke:#ff5d7a88;fill:#ff5d7a18}.ritual-ring{fill:none;stroke:#e7f6ff55;stroke-dasharray:4 3}
-.mark circle,.mark rect,.mark polygon{stroke:#07101c;stroke-width:1}.mark.tower rect{fill:#e7f4ff}.mark.order circle{fill:#8ceeff}.mark.chaos circle{fill:#c9a6ff}.mark.phoenix polygon{fill:#ffe08a}
-.mark.red circle{fill:#ff5d7a}.mark.blue circle{fill:#7ecbff}.mark.purple circle{fill:#c9a6ff}.mark.yellow circle{fill:#ffe08a}
-.mark.gold circle{fill:#ffe08a}.mark.fire circle{fill:#ff5d7a}.mark.ancient circle{fill:#ffb15a}.mark.pyro circle{fill:#ff8a4a}
-.mark.cyclops circle,.mark.harpy circle,.mark.oracle circle,.mark.scorpion circle,.mark.imp circle,.mark.totem circle,.mark.teleporter circle,.mark.ritual circle{fill:#9bb4c8}
-.mark text{fill:#edf8ff;font-size:11px;text-anchor:middle;paint-order:stroke;stroke:#070d1bcc;stroke-width:3}
-.scalebar line{stroke:#8ceeff;stroke-width:3}.scalebar text{fill:#8dabc3;font-size:12px}
-.ward .radius{fill:#8ceeff22;stroke:#8ceeff;stroke-width:2}.ward.chaos .radius{fill:#c9a6ff22;stroke:#c9a6ff}.ward .pin{fill:#8ceeff;stroke:#07101c;stroke-width:2}.ward.chaos .pin{fill:#c9a6ff}
-.ward.selected .pin{stroke:#fff;stroke-width:3}.token circle{fill:#0b1525;stroke:#8ceeff;stroke-width:2}.token.chaos circle{stroke:#c9a6ff}.token text{fill:#edf8ff;font-size:10px;text-anchor:middle}
-#detail{min-height:72px;font-size:12px;line-height:1.5}#detail p{margin:6px 0;color:#c5d7e6}#detail button{margin-top:6px}
-.godlist{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:240px;overflow:auto}.godchip{display:flex;gap:6px;align-items:center;padding:4px;border:1px solid var(--edge);background:#0b1525;color:var(--ink);border-radius:8px;font-size:10px;text-align:left}.godchip img{width:28px;height:28px;object-fit:cover;border-radius:5px}.godchip.armed{border-color:#8ceeff}
-#godSearch{width:100%;margin-bottom:8px;background:#0b1525;border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:8px}
-.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.modal{position:fixed;inset:0;background:#030714de;display:grid;place-items:center;padding:20px;z-index:5}.modal[hidden]{display:none}.dialog{width:min(720px,100%);max-height:86vh;overflow:auto;padding:22px}.dialog h2{font-size:22px;letter-spacing:0;text-transform:none;color:var(--ink);margin:8px 0 12px}.dialog h3{margin:14px 0 4px;font-size:14px}
-@media(max-width:980px){.layout{grid-template-columns:1fr}.topbar{height:auto;padding:10px;flex-wrap:wrap}.badge{display:none}}
+button.chaos.active{border-color:#ff9a3c99;color:#ffb56a}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.swatch{width:22px;height:22px;border-radius:50%;border:2px solid transparent;padding:0}.swatch.active{border-color:#fff}
+label.brush,label.check{display:block;font-size:11px;color:var(--muted);margin-top:8px}input[type=range]{width:100%}
+label.check{display:flex;align-items:center;gap:8px;cursor:pointer}label.check input{width:16px;height:16px;margin:0;accent-color:#8ceeff}
+.stage{min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px}
+.stage svg{flex:1;width:100%;height:100%;background:#12382a;border-radius:16px;border:1px solid var(--edge);touch-action:none;display:block}
+.credit{margin:0;font-size:11px;color:var(--muted)}
+.ward .radius{fill:#3ec6ff22;stroke:#3ec6ff;stroke-width:2;pointer-events:none}.ward.chaos .radius{fill:#ff9a3c22;stroke:#ff9a3c}
+.ward .pin{fill:#3ec6ff;stroke:#07101c;stroke-width:2}.ward.chaos .pin{fill:#ff9a3c}
+svg.radii-off .radius{display:none}
+#wardCount{font-size:13px;margin-top:8px}
+.modal{position:fixed;inset:0;background:#030714de;display:grid;place-items:center;padding:20px;z-index:5}.modal[hidden]{display:none}
+.dialog{width:min(720px,100%);max-height:86vh;overflow:auto} .dialog h2{font-size:28px;letter-spacing:0;text-transform:none;color:var(--ink);margin:8px 0 12px}
+.dialog h3{margin:14px 0 4px;font-size:15px;letter-spacing:0;text-transform:none;color:var(--ink)}
+@media(max-width:800px){.layout{grid-template-columns:1fr;height:auto}.stage{height:70vh}.topbar{height:auto;padding:10px;flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -54,13 +51,14 @@ label.brush{display:block;font-size:11px;color:var(--muted);margin-top:8px}input
 <div class="layout">
   <aside class="panel">
     <h1>Wards</h1>
+    <p id="wardCount">Order 0/10 · Chaos 0/10</p>
     <p class="muted" id="wardHint"></p>
     <h2>Side</h2>
     <div class="sides">
       <button type="button" id="sideOrder" class="active" aria-pressed="true">Order</button>
       <button type="button" id="sideChaos" class="chaos" aria-pressed="false">Chaos</button>
     </div>
-    <h2>Place</h2>
+    <h2>Type</h2>
     <div class="wardlist" id="wardTypes"></div>
     <h2>Draw</h2>
     <div class="tools">
@@ -68,35 +66,30 @@ label.brush{display:block;font-size:11px;color:var(--muted);margin-top:8px}input
       <button type="button" data-tool="pen">Pen</button>
       <button type="button" data-tool="arrow">Arrow</button>
       <button type="button" data-tool="eraser">Eraser</button>
-      <button type="button" data-tool="token">Portrait</button>
+      <button type="button" data-tool="pan">Pan</button>
     </div>
     <div class="swatches" id="colors"></div>
     <label class="brush">Brush <span id="brushLabel">4px</span><input id="brush" type="range" min="2" max="18" value="4"></label>
+    <label class="check"><input id="showRadii" type="checkbox" checked> Show vision circles</label>
     <div class="actions">
       <button type="button" id="undoBtn">Undo</button>
       <button type="button" id="redoBtn">Redo</button>
       <button type="button" id="clearDraw">Clear drawings</button>
-      <button type="button" id="clearWards">Clear wards</button>
-      <button type="button" id="clearAll">Clear all</button>
+      <button type="button" id="clearOrder">Clear Order wards</button>
+      <button type="button" id="clearChaos">Clear Chaos wards</button>
+      <button type="button" id="fitBtn">Fit map</button>
+      <button type="button" id="exportBtn">Export PNG</button>
     </div>
+    <p class="muted" style="margin-top:10px">Wheel zooms. Drag a ward to move it. Click or right-click a ward to remove it. Ten wards per team.</p>
   </aside>
   <main class="stage">
-    <svg id="board" viewBox="0 0 1000 1000" role="img" aria-label="SMITE 2 Conquest strategy board">
-      <g id="geometry"></g>
+    <svg id="board" viewBox="0 0 1024 1024" role="img" aria-label="SMITE 2 Conquest map">
+      <image id="mapImage" href="src/assets/conquest.png" x="0" y="0" width="1024" height="1024"/>
       <g id="ink"></g>
       <g id="vision"></g>
     </svg>
+    <p class="credit">Map image: <a href="https://smitesource.com/maps/conquest" target="_blank" rel="noopener">SmiteSource</a></p>
   </main>
-  <aside class="panel">
-    <h1>Board</h1>
-    <p id="wardCount">Order 0 · Chaos 0</p>
-    <div id="detail"><p class="muted">Select a ward or portrait, or place a new one.</p></div>
-    <h2>Portraits</h2>
-    <input id="godSearch" type="search" placeholder="Search a god" aria-label="Search gods">
-    <div class="godlist" id="godList"></div>
-    <div class="actions"><button type="button" id="exportBtn">Export PNG</button></div>
-    <p class="muted" style="margin-top:10px">The board stays in this browser. Circle sizes use an estimated scale; the meter labels do not.</p>
-  </aside>
 </div>
 <div class="modal" id="about" hidden>
   <div class="dialog panel" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
@@ -106,6 +99,7 @@ label.brush{display:block;font-size:11px;color:var(--muted);margin-top:8px}input
     <div class="actions"><button type="button" id="aboutClose">Back to the map</button></div>
   </div>
 </div>
+<div id="toast" role="status" hidden style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#15273df5;border:1px solid #8ceeff66;color:#effbff;padding:13px 22px;border-radius:9px;font-size:12px;z-index:8;max-width:90vw"></div>
 <script src="src/map-data.js"></script>
 <script src="src/map-board.js"></script>
 <script src="src/map-page.js"></script>

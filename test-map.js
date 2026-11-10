@@ -18,29 +18,16 @@ function ok(condition, label) {
 function unit() {
   ok(Data.scaleEstimated === true, 'Map scale is marked estimated');
   ok(Data.ESTIMATED_TITAN_SPAN_METERS === 160, 'Estimated titan span is 160m');
-  ok(Math.abs(Data.SVG_PER_METER - Data.TITAN_SPAN_SVG / 160) < 1e-9, 'Scale is titan span divided by the estimate');
+  ok(Data.TITAN_SPAN_PX === 935, 'Measured base-glow span is 935px');
+  ok(Math.abs(Data.PX_PER_METER - 935 / 160) < 1e-9, 'Scale is the measured span divided by the estimate');
+  ok(Data.ORDER_BASE.y > Data.CHAOS_BASE.y, 'Order base is the bottom of the image');
   const vision = Data.wardById('vision');
   const sentry = Data.wardById('sentry');
-  const heim = Data.wardById('heimdallr');
-  const flare = Data.wardById('gjallar');
   ok(vision.radiusM === 7.2 && vision.estimated === false && vision.durationS === 120, 'Vision Ward is 7.2m for 120s');
   ok(sentry.radiusM === 7.2 && sentry.revealsWards === true, 'Sentry Ward matches 7.2m and reveals wards');
-  ok(Data.wardById('chalice').radiusM === 7.2 && Data.wardById('bifrost').durationS === 90, 'Chalice radius and Bifrost duration');
-  ok(heim.radiusM === 8.8 && heim.kind === 'pulse', "Heimdallr's Sight is an 8.8m pulse");
-  ok(flare.radiusM === 13.2 && flare.travelM === 44 && flare.corridorM === 8.8, 'Gjallarflare burst and travel figures');
-  ok(Data.radiusSvg('vision') === 7.2 * Data.SVG_PER_METER, 'Vision circle uses the estimated scale');
-  ok(Data.radiusSvg('gjallar') > Data.radiusSvg('heimdallr') && Data.radiusSvg('heimdallr') > Data.radiusSvg('vision'), 'Larger reveals draw larger circles');
-  const gf = Data.landmarks.find(m => m.id === 'gold-fury');
-  const fg = Data.landmarks.find(m => m.id === 'fire-giant');
-  const order = Data.landmarks.find(m => m.id === 'order-titan');
-  const chaos = Data.landmarks.find(m => m.id === 'chaos-titan');
-  ok(gf.x < fg.x, 'Gold Fury is on the duo side, Fire Giant on the solo side');
-  ok(order.y > chaos.y, 'Order base is the bottom of the board');
-  ok(['mid', 'duo', 'solo'].every(lane => ['t1', 't2', 'phoenix'].every(tier =>
-    Data.landmarks.some(m => m.id === 'order-' + lane + '-' + tier) &&
-    Data.landmarks.some(m => m.id === 'chaos-' + lane + '-' + tier)
-  )), 'Each lane has two towers and a Phoenix for both sides');
-  ok(Data.notes.some(n => /estimated/i.test(n) && /160m/.test(n)), 'Notes say the 160m span is estimated');
+  ok(Math.abs(Data.radiusPx('vision') - 7.2 * Data.PX_PER_METER) < 1e-9, 'Vision circle uses the estimated scale');
+  ok(Data.notes.some(n => /estimated/i.test(n) && /160m/.test(n) && /7\.2/.test(n)), 'Notes state the 7.2m radius and the 160m estimate');
+  ok(fs.existsSync(path.join(__dirname, 'src/assets/conquest.png')), 'The SmiteSource map image is in the repo');
 
   const state = Board.blank();
   const id = Board.placeWard(state, { type: 'sentry', side: 'Order', x: 300, y: 500 });
@@ -63,6 +50,16 @@ function unit() {
   assert.throws(() => Board.placeWard(Board.blank(), { type: 'nope', side: 'Order', x: 0, y: 0 }));
   checks += 1;
   console.log('PASS', 'Unknown ward types are rejected');
+  const capped = Board.blank();
+  for (let i = 0; i < 10; i++) Board.placeWard(capped, { type: i % 2 ? 'sentry' : 'vision', side: 'Order', x: i, y: 10 });
+  ok(Board.counts(capped).Order === 10, 'A team can place 10 wards');
+  assert.throws(() => Board.placeWard(capped, { type: 'vision', side: 'Order', x: 1, y: 1 }), /10 wards/);
+  checks += 1;
+  console.log('PASS', 'An 11th Order ward is rejected');
+  Board.placeWard(capped, { type: 'vision', side: 'Chaos', x: 4, y: 4 });
+  ok(Board.counts(capped).Chaos === 1, 'The other team is not blocked by that cap');
+  Board.clearWards(capped, 'Order');
+  ok(Board.counts(capped).Order === 0 && Board.counts(capped).Chaos === 1, 'Clearing one team leaves the other');
 }
 
 function serve() {
@@ -109,10 +106,11 @@ async function page(server) {
   ok(w.document.getElementById('soundEffects').checked && w.localStorage.getItem('crystal-draft-sound') === '1', 'The map checkbox uses the same sound setting');
   ok(/7\.2/.test(w.document.getElementById('aboutBody').textContent), 'About panel shows the 7.2m radius');
   ok(/estimated/i.test(w.document.getElementById('aboutBody').textContent), 'About panel labels the scale as estimated');
-  ok(w.document.querySelector('[data-landmark], .mark.gold, .mark.fire'), 'The schematic draws Gold Fury and Fire Giant');
+  ok(w.document.getElementById('mapImage').getAttribute('href').endsWith('conquest.png'), 'The board uses the SmiteSource image');
+  ok(/Map image:/.test(w.document.body.textContent) && /SmiteSource/.test(w.document.body.textContent), 'The page credits SmiteSource');
   const id = w.CrystalMap.placeWard('vision', 'Order', 420, 500);
   const radius = w.document.querySelector('[data-ward="' + id + '"] .radius');
-  ok(radius && Math.abs(Number(radius.getAttribute('r')) - Data.radiusSvg('vision')) < 0.02, 'A placed ward draws its scaled vision circle');
+  ok(radius && Math.abs(Number(radius.getAttribute('r')) - Data.radiusPx('vision')) < 0.02, 'A placed ward draws its scaled vision circle');
   ok(w.CrystalMap.counts().Order === 1, 'The page counts the Order ward');
   w.CrystalMap.undo();
   ok(w.CrystalMap.counts().Order === 0, 'Undo removes the placed ward');

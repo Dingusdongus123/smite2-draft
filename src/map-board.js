@@ -43,6 +43,9 @@
     const spec = Data.wardById(input.type);
     if (!spec) throw new Error('Unknown ward');
     if (input.side !== 'Order' && input.side !== 'Chaos') throw new Error('Unknown side');
+    const limit = Data.WARD_LIMIT || 10;
+    const have = state.wards.filter(function (w) { return w.side === input.side; }).length;
+    if (have >= limit) throw new Error(input.side + ' already has ' + limit + ' wards.');
     let id = '';
     transaction(state, function () {
       id = nextId(state, 'w');
@@ -72,9 +75,10 @@
       state.wards = state.wards.filter(function (w) { return w.id !== id; });
     });
   }
-  function clearWards(state) {
-    if (!state.wards.length) return false;
-    return transaction(state, function () { state.wards = []; });
+  function clearWards(state, side) {
+    const next = side ? state.wards.filter(function (w) { return w.side !== side; }) : [];
+    if (next.length === state.wards.length) return false;
+    return transaction(state, function () { state.wards = next; });
   }
   function placeToken(state, input) {
     let id = '';
