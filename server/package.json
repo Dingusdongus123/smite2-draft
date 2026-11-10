@@ -1,0 +1,14 @@
+{
+  "name": "smite2-draft-rooms",
+  "private": true,
+  "description": "WebSocket room server for the SMITE 2 Crystal Draft simulator",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
