@@ -75,15 +75,16 @@
   }
   function svgPoint(ev) {
     const svg = $('board');
-    const pt = svg.createSVGPoint();
-    pt.x = ev.clientX;
-    pt.y = ev.clientY;
     const ctm = svg.getScreenCTM && svg.getScreenCTM();
-    if (ctm) {
+    if (ctm && svg.createSVGPoint) {
+      const pt = svg.createSVGPoint();
+      pt.x = ev.clientX;
+      pt.y = ev.clientY;
       const p = pt.matrixTransform(ctm.inverse());
       return { x: p.x, y: p.y };
     }
     const rect = svg.getBoundingClientRect();
+    if (!rect.width || !rect.height) return { x: view.x + view.w / 2, y: view.y + view.h / 2 };
     return {
       x: view.x + (ev.clientX - rect.left) / rect.width * view.w,
       y: view.y + (ev.clientY - rect.top) / rect.height * view.h
@@ -120,9 +121,17 @@
     return `<polyline class="stroke" points="${pointsAttr(stroke.points)}" ${common}/>`;
   }
   function wardSvg(ward) {
+    const spec = Data.wardById(ward.type);
     const r = Data.radiusPx(ward.type);
-    const cls = ward.side === 'Chaos' ? 'ward chaos' : 'ward order';
-    return `<g class="${cls}" data-ward="${ward.id}" transform="translate(${ward.x} ${ward.y})"><circle class="radius" r="${r.toFixed(2)}"/><circle class="pin" r="7"/><title>${ward.side} ${ward.type} · 7.2m</title></g>`;
+    const size = Data.WARD_ICON_PX;
+    const half = size / 2;
+    const ring = half + 1.25;
+    const chaos = ward.side === 'Chaos';
+    const cls = chaos ? 'ward chaos' : 'ward order';
+    const ink = chaos ? '#ff9a3c' : '#3ec6ff';
+    const icon = spec && spec.icon ? spec.icon : Data.wardById('vision').icon;
+    const name = spec ? spec.name : ward.type;
+    return `<g class="${cls}" data-ward="${ward.id}" data-type="${ward.type}" transform="translate(${ward.x} ${ward.y})"><circle class="radius" r="${r.toFixed(2)}" fill="${ink}" fill-opacity="0.13" stroke="${ink}" stroke-width="2" pointer-events="none"/><circle class="hit" r="${(ring + 2).toFixed(2)}" fill="transparent"/><circle class="team-ring" r="${ring.toFixed(2)}" fill="none" stroke="${ink}" stroke-width="1.5" pointer-events="none"/><image class="icon" href="${icon}" x="${-half}" y="${-half}" width="${size}" height="${size}"/><title>${ward.side} ${name} · 7.2m</title></g>`;
   }
   function render() {
     const preview = drawing && drawing.points.length > 1 ? strokeSvg({ tool: drawing.tool, color: color, size: brush, points: drawing.points }) : '';
@@ -239,7 +248,7 @@
   document.addEventListener('pointerdown', () => { if (audio.enabled) unlockAudio(); });
   $('sideOrder').onclick = () => setSide('Order');
   $('sideChaos').onclick = () => setSide('Chaos');
-  $('wardTypes').innerHTML = Data.wards.map(w => `<button type="button" data-ward-type="${w.id}" class="${w.id === wardType ? 'active' : ''}">${w.name}</button>`).join('');
+  $('wardTypes').innerHTML = Data.wards.map(w => `<button type="button" data-ward-type="${w.id}" class="${w.id === wardType ? 'active' : ''}"><img src="${w.icon}" alt="" width="26" height="26">${w.name}</button>`).join('');
   $('wardTypes').onclick = ev => {
     const btn = ev.target.closest('[data-ward-type]');
     if (!btn) return;
@@ -287,17 +296,23 @@
     if (meta && ev.key.toLowerCase() === 'y') { ev.preventDefault(); Board.redo(state); changed(); }
   });
 
-  async function exportPng() {
+  function loadImage(src) {
+    const image = new Image();
+    image.src = src;
+    return image.decode().then(() => image);
+  }
+  async function exportCanvas() {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
     canvas.height = 1024;
     const ctx = canvas.getContext('2d');
-    const image = new Image();
-    image.src = 'src/assets/conquest.png';
-    await image.decode();
-    ctx.drawImage(image, 0, 0, 1024, 1024);
+    const map = await loadImage('src/assets/conquest.png');
+    ctx.drawImage(map, 0, 0, 1024, 1024);
+    const icons = {};
+    for (const spec of Data.wards) icons[spec.id] = await loadImage(spec.icon);
     const clone = board.cloneNode(true);
     clone.querySelector('#mapImage')?.remove();
+    clone.querySelectorAll('.icon, .hit').forEach(node => node.remove());
     if (!showRadii) clone.querySelectorAll('.radius').forEach(node => node.remove());
     clone.setAttribute('width', '1024');
     clone.setAttribute('height', '1024');
@@ -310,6 +325,15 @@
     await overlay.decode();
     ctx.drawImage(overlay, 0, 0);
     URL.revokeObjectURL(url);
+    const size = Data.WARD_ICON_PX;
+    state.wards.forEach(ward => {
+      const icon = icons[ward.type] || icons.vision;
+      ctx.drawImage(icon, ward.x - size / 2, ward.y - size / 2, size, size);
+    });
+    return canvas;
+  }
+  async function exportPng() {
+    const canvas = await exportCanvas();
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
     link.download = 'smite2-conquest-board.png';
@@ -327,6 +351,7 @@
       return id;
     },
     undo: () => { const ok = Board.undo(state); if (ok) changed(); return ok; },
-    counts: () => Board.counts(state)
+    counts: () => Board.counts(state),
+    exportCanvas: exportCanvas
   };
 })();

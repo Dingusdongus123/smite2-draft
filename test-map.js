@@ -28,6 +28,9 @@ function unit() {
   ok(Math.abs(Data.radiusPx('vision') - 7.2 * Data.PX_PER_METER) < 1e-9, 'Vision circle uses the estimated scale');
   ok(Data.notes.some(n => /estimated/i.test(n) && /160m/.test(n) && /7\.2/.test(n)), 'Notes state the 7.2m radius and the 160m estimate');
   ok(fs.existsSync(path.join(__dirname, 'src/assets/conquest.png')), 'The SmiteSource map image is in the repo');
+  ok(Data.WARD_ICON_PX === 16, 'Placed ward icons are 16 map pixels');
+  ok(vision.icon.endsWith('vision-ward.png') && sentry.icon.endsWith('sentry-ward.png') && vision.icon !== sentry.icon, 'Vision and Sentry use different item icons');
+  ok(fs.existsSync(path.join(__dirname, vision.icon)) && fs.existsSync(path.join(__dirname, sentry.icon)), 'Ward icon files are in the repo');
 
   const state = Board.blank();
   const id = Board.placeWard(state, { type: 'sentry', side: 'Order', x: 300, y: 500 });
@@ -75,7 +78,7 @@ function serve() {
     fs.readFile(file, (err, data) => {
       if (err) { res.writeHead(404); res.end(); return; }
       const ext = path.extname(file);
-      const types = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp' };
+      const types = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png' };
       res.writeHead(200, { 'content-type': types[ext] || 'application/octet-stream' });
       res.end(data);
     });
@@ -108,12 +111,35 @@ async function page(server) {
   ok(/estimated/i.test(w.document.getElementById('aboutBody').textContent), 'About panel labels the scale as estimated');
   ok(w.document.getElementById('mapImage').getAttribute('href').endsWith('conquest.png'), 'The board uses the SmiteSource image');
   ok(/Map image:/.test(w.document.body.textContent) && /SmiteSource/.test(w.document.body.textContent), 'The page credits SmiteSource');
+  ok(/wiki\.smite2\.com/.test(w.document.querySelector('.credit').textContent), 'The credit line names the wiki');
+  const visionBtn = w.document.querySelector('[data-ward-type="vision"] img');
+  const sentryBtn = w.document.querySelector('[data-ward-type="sentry"] img');
+  ok(visionBtn && visionBtn.getAttribute('src').endsWith('vision-ward.png'), 'The Vision selector shows the Vision icon');
+  ok(sentryBtn && sentryBtn.getAttribute('src').endsWith('sentry-ward.png'), 'The Sentry selector shows the Sentry icon');
   const id = w.CrystalMap.placeWard('vision', 'Order', 420, 500);
+  const sentryId = w.CrystalMap.placeWard('sentry', 'Chaos', 600, 400);
   const radius = w.document.querySelector('[data-ward="' + id + '"] .radius');
   ok(radius && Math.abs(Number(radius.getAttribute('r')) - Data.radiusPx('vision')) < 0.02, 'A placed ward draws its scaled vision circle');
-  ok(w.CrystalMap.counts().Order === 1, 'The page counts the Order ward');
+  const visionIcon = w.document.querySelector('[data-ward="' + id + '"] .icon');
+  const sentryIcon = w.document.querySelector('[data-ward="' + sentryId + '"] .icon');
+  ok(visionIcon && visionIcon.getAttribute('href').endsWith('vision-ward.png'), 'A Vision ward draws the pyramid icon');
+  ok(sentryIcon && sentryIcon.getAttribute('href').endsWith('sentry-ward.png'), 'A Sentry ward draws the eye icon');
+  ok(Number(visionIcon.getAttribute('width')) === Data.WARD_ICON_PX, 'The placed icon uses the small map size');
+  ok(w.document.querySelector('[data-ward="' + id + '"].order .team-ring') && w.document.querySelector('[data-ward="' + sentryId + '"].chaos .team-ring'), 'Each ward has a team ring');
+  ok(/stroke-width:1\.5/.test(w.document.querySelector('style').textContent), 'The team ring is 1.5px');
   w.CrystalMap.undo();
-  ok(w.CrystalMap.counts().Order === 0, 'Undo removes the placed ward');
+  ok(w.CrystalMap.getState().wards.length === 1 && w.CrystalMap.getState().wards[0].type === 'vision', 'Undo removes the Sentry ward and keeps the Vision ward');
+  w.document.querySelector('[data-ward-type="sentry"]').click();
+  const press = new w.Event('pointerdown', { bubbles: true });
+  Object.defineProperties(press, { button: { value: 0 }, clientX: { value: 30 }, clientY: { value: 30 } });
+  w.document.getElementById('board').dispatchEvent(press);
+  ok(w.CrystalMap.getState().wards.some(ward => ward.type === 'sentry' && ward.side === 'Order'), 'The selector sets the type of a new ward');
+  await new Promise(resolve => setTimeout(resolve, 250));
+  const saved = JSON.parse(w.localStorage.getItem('crystal-map-board-v2'));
+  ok(saved.wards.some(ward => ward.type === 'vision') && saved.wards.some(ward => ward.type === 'sentry'), 'Ward types persist in localStorage');
+  ok(w.CrystalMap.counts().Order === 2, 'The page counts both Order wards');
+  w.CrystalMap.undo();
+  ok(w.CrystalMap.counts().Order === 1 && w.CrystalMap.getState().wards[0].type === 'vision', 'Undo removes the ward placed from the selector');
   ok(w.document.body.textContent.includes('Conquest') || w.document.title.includes('Conquest'), 'The page is the Conquest board');
   const built = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   ok(built.includes('href="map.html"'), 'The draft page links to the map');

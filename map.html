@@ -30,7 +30,10 @@ label.check{display:flex;align-items:center;gap:8px;cursor:pointer}label.check i
 .stage svg{flex:1;width:100%;height:100%;background:#12382a;border-radius:16px;border:1px solid var(--edge);touch-action:none;display:block}
 .credit{margin:0;font-size:11px;color:var(--muted)}
 .ward .radius{fill:#3ec6ff22;stroke:#3ec6ff;stroke-width:2;pointer-events:none}.ward.chaos .radius{fill:#ff9a3c22;stroke:#ff9a3c}
-.ward .pin{fill:#3ec6ff;stroke:#07101c;stroke-width:2}.ward.chaos .pin{fill:#ff9a3c}
+.ward .team-ring{fill:none;stroke:#3ec6ff;stroke-width:1.5;pointer-events:none}.ward.chaos .team-ring{stroke:#ff9a3c}
+.ward .icon{pointer-events:none}.ward .hit{fill:transparent}
+.wardlist button{display:inline-flex;align-items:center;gap:6px}
+.wardlist img{width:26px;height:26px;display:block}
 svg.radii-off .radius{display:none}
 #wardCount{font-size:13px;margin-top:8px}
 .modal{position:fixed;inset:0;background:#030714de;display:grid;place-items:center;padding:20px;z-index:5}.modal[hidden]{display:none}
@@ -88,7 +91,7 @@ svg.radii-off .radius{display:none}
       <g id="ink"></g>
       <g id="vision"></g>
     </svg>
-    <p class="credit">Map image: <a href="https://smitesource.com/maps/conquest" target="_blank" rel="noopener">SmiteSource</a></p>
+    <p class="credit">Map image: <a href="https://smitesource.com/maps/conquest" target="_blank" rel="noopener">SmiteSource</a> · Ward icons: <a href="https://wiki.smite2.com/" target="_blank" rel="noopener">wiki.smite2.com</a></p>
   </main>
 </div>
 <div class="modal" id="about" hidden>
