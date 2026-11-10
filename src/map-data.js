@@ -14,6 +14,8 @@
   const WARD_LIMIT = 10;
   // Icon edge in map pixels. At the fitted 1024 view this is about 15 CSS px.
   const WARD_ICON_PX = 16;
+  // About 22 CSS px when the fitted 1024 map fills a typical window.
+  const GOD_ICON_PX = 23;
 
   const wards = [
     {
@@ -70,6 +72,7 @@
     scaleEstimated: true,
     WARD_LIMIT: WARD_LIMIT,
     WARD_ICON_PX: WARD_ICON_PX,
+    GOD_ICON_PX: GOD_ICON_PX,
     wards: wards,
     notes: notes,
     colors: ['#3ec6ff', '#ff9a3c', '#ff5d7a', '#ffe08a', '#9dffce', '#ffffff', '#c9a6ff'],
