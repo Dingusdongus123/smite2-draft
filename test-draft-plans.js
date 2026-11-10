@@ -46,6 +46,12 @@ function unit() {
   const markedCode = Codec.encodeDraft(marked, ids);
   const markedBack = Codec.decodeDraft(markedCode, ids);
   ok(markedCode.startsWith('cd2.') && markedBack.aspects[6] === true && markedBack.aspects.filter(Boolean).length === 1 && markedBack.gods.join() === marked.gods.join(), 'A cd2 ID keeps which pick has an aspect');
+  const withRoles = sample('standard');
+  withRoles.aspects = withRoles.gods.map(() => false);
+  withRoles.roles = withRoles.gods.map((god, i) => i === 6 ? { role: 'Mid', confirmed: false } : i === 7 ? { role: 'Solo', confirmed: true } : null);
+  const roleCode = Codec.encodeDraft(withRoles, ids);
+  const roleBack = Codec.decodeDraft(roleCode, ids);
+  ok(roleCode.startsWith('cd2.') && roleBack.roles[6].role === 'Mid' && roleBack.roles[6].confirmed === false && roleBack.roles[7].role === 'Solo' && roleBack.roles[7].confirmed === true && roleBack.roles[0] == null, 'A cd2 ID can carry roles and still reads older codes');
   const link = 'https://smite2-draft.onrender.com/?replay=' + encodeURIComponent(Codec.encodeDraft(sample('standard'), ids));
   ok(Codec.decodeDraft(Codec.extractReplayCode(link), ids).names.Order === 'Renée', 'A replay link resolves to the same draft');
   assert.throws(() => Codec.encodeDraft({ format: 'standard', names: { Order: 'A', Chaos: 'B' }, gods: ['nut'] }, ids));

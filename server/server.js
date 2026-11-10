@@ -303,6 +303,11 @@ function createApp(options = {}) {
         send(ws, { type: 'notice', message: 'You can only act for your own side.' });
         return;
       }
+    } else if (action.type === 'roles') {
+      if (action.side !== meta.side) {
+        send(ws, { type: 'notice', message: 'You can only assign roles for your own team.' });
+        return;
+      }
     } else {
       send(ws, { type: 'notice', message: 'Unknown action.' });
       return;

@@ -68,8 +68,9 @@
     const gods = record.gods || [];
     if (gods.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
     const index = new Map(rosterIds.map((id, i) => [id, i]));
-    const version = Array.isArray(record.aspects) ? 2 : 1;
-    if (version === 2 && record.aspects.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
+    const version = Array.isArray(record.aspects) || Array.isArray(record.roles) ? 2 : 1;
+    if (version === 2 && record.aspects && record.aspects.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
+    if (record.roles && record.roles.length !== need) throw new Error('A draft ID is only issued for a completed ' + format + ' draft.');
     const bytes = [version, format === 'extended' ? 1 : 0];
     const day = dayNumber(record.date);
     bytes.push((day >> 8) & 255, day & 255);
@@ -86,9 +87,33 @@
       }
     }
     if (version === 2) {
-      record.aspects.forEach(function (on, i) { bytes.push(on && gods[i] ? 1 : 0); });
+      const aspects = record.aspects || [];
+      for (let i = 0; i < need; i++) bytes.push(aspects[i] && gods[i] ? 1 : 0);
+      if (Array.isArray(record.roles)) {
+        record.roles.forEach(function (entry, i) {
+          if (!pickMask(format)[i]) return;
+          bytes.push(roleByte(entry));
+        });
+      }
     }
     return (version === 2 ? 'cd2.' : 'cd1.') + b64encode(bytes);
+  }
+  function pickMask(format) {
+    if (format === 'extended') return [0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1];
+    return [0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1];
+  }
+  function roleByte(entry) {
+    if (!entry || !entry.role) return 255;
+    const idx = ROLES.indexOf(entry.role);
+    if (idx < 0) return 255;
+    return entry.confirmed ? idx : 32 + idx;
+  }
+  function roleFromByte(byte) {
+    if (byte === 255 || byte == null) return null;
+    const confirmed = byte < 32;
+    const idx = confirmed ? byte : byte - 32;
+    if (idx < 0 || idx >= ROLES.length) return null;
+    return { role: ROLES[idx], confirmed: confirmed };
   }
 
   function readName(bytes, offset) {
@@ -115,30 +140,55 @@
     const chaosName = readName(bytes, cursor);
     cursor = chaosName.next;
     const need = actionCount(format);
-    const tail = version === 2 ? need * 2 : need;
-    if (bytes.length !== cursor + tail) throw new Error('That draft ID does not match a completed ' + format + ' draft.');
+    const aspectLen = version === 2 ? need : 0;
+    const picks = pickMask(format).reduce(function (sum, bit) { return sum + bit; }, 0);
+    const baseLen = cursor + need + aspectLen;
+    const withRoles = baseLen + picks;
+    if (bytes.length !== baseLen && !(version === 2 && bytes.length === withRoles)) throw new Error('That draft ID does not match a completed ' + format + ' draft.');
     const gods = [];
     const aspects = [];
+    const roles = [];
     for (let i = 0; i < need; i++) {
       const n = bytes[cursor + i];
       if (n === 255) gods.push(null);
       else if (n >= rosterIds.length) throw new Error('That draft ID is for a different roster.');
       else gods.push(rosterIds[n]);
       aspects.push(version === 2 && bytes[cursor + need + i] === 1 && n !== 255);
+      roles.push(null);
+    }
+    if (bytes.length === withRoles) {
+      let roleCursor = baseLen;
+      for (let i = 0; i < need; i++) {
+        if (!pickMask(format)[i]) continue;
+        roles[i] = roleFromByte(bytes[roleCursor]);
+        roleCursor += 1;
+      }
     }
     return {
       format: format,
       date: dateFromDay(day),
       names: { Order: orderName.text, Chaos: chaosName.text },
       gods: gods,
-      aspects: aspects
+      aspects: aspects,
+      roles: roles
     };
   }
 
   function orderedActions(record, draftOrders) {
     const order = draftOrders[record.format];
     if (!order || order.length !== record.gods.length) throw new Error('Draft order does not match this ID.');
-    return record.gods.map((god, i) => ({ step: i, side: order[i].side, type: order[i].type, god: god, aspect: !!(record.aspects && record.aspects[i] && order[i].type === 'pick') }));
+    return record.gods.map((god, i) => {
+      const assigned = record.roles && record.roles[i];
+      return {
+        step: i,
+        side: order[i].side,
+        type: order[i].type,
+        god: god,
+        aspect: !!(record.aspects && record.aspects[i] && order[i].type === 'pick'),
+        role: assigned && assigned.role || '',
+        roleConfirmed: !!(assigned && assigned.confirmed)
+      };
+    });
   }
 
   function norm(value) {
