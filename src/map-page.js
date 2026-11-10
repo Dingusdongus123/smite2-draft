@@ -3,6 +3,7 @@
   const Data = window.CrystalMapData;
   const Board = window.CrystalMapBoard;
   const $ = id => document.getElementById(id);
+  const esc = value => String(value).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
   const STORE = 'crystal-map-board-v2';
   const SOUND_KEY = 'crystal-draft-sound';
   const MAP = Data.MAP_SIZE;
@@ -17,6 +18,10 @@
   let color = Data.colors[0];
   let brush = 4;
   let showRadii = true;
+  let gods = [];
+  let armedGod = '';
+  let selectedToken = '';
+  const GOD_PX = 28;
   let drag = null;
   let drawing = null;
   let panning = null;
@@ -120,6 +125,22 @@
     }
     return `<polyline class="stroke" points="${pointsAttr(stroke.points)}" ${common}/>`;
   }
+  function tokenSvg(token) {
+    const god = gods.find(g => g.id === token.godId);
+    const name = god ? god.name : token.godId;
+    const half = GOD_PX / 2;
+    const chaos = token.side === 'Chaos';
+    const cls = (chaos ? 'token chaos' : 'token order') + (selectedToken === token.id ? ' selected' : '');
+    const ink = chaos ? '#ff9a3c' : '#3ec6ff';
+    return `<g class="${cls}" data-token="${token.id}" transform="translate(${token.x} ${token.y})"><circle class="mark" r="${(half + 3).toFixed(1)}"/><circle class="halo" r="${(half + 1).toFixed(1)}" fill="none" stroke="${ink}" stroke-width="1.5"/><image href="src/portraits/${token.godId}.webp" x="${-half}" y="${-half}" width="${GOD_PX}" height="${GOD_PX}"/><title>${token.side} ${name}</title></g>`;
+  }
+  function paintGods() {
+    const box = $('godList');
+    if (!box) return;
+    const term = ($('godSearch') && $('godSearch').value || '').trim().toLowerCase();
+    const list = gods.filter(g => !term || g.name.toLowerCase().includes(term));
+    box.innerHTML = list.map(g => `<button type="button" class="godchip ${armedGod === g.id ? 'armed' : ''}" data-god="${esc(g.id)}"><img src="src/portraits/${esc(g.id)}.webp" alt="" width="36" height="36"><span>${esc(g.name)}</span></button>`).join('');
+  }
   function wardSvg(ward) {
     const spec = Data.wardById(ward.type);
     const r = Data.radiusPx(ward.type);
@@ -137,11 +158,13 @@
     const preview = drawing && drawing.points.length > 1 ? strokeSvg({ tool: drawing.tool, color: color, size: brush, points: drawing.points }) : '';
     $('ink').innerHTML = state.strokes.map(strokeSvg).join('') + preview;
     $('vision').innerHTML = state.wards.map(wardSvg).join('');
+    $('tokens').innerHTML = state.tokens.map(tokenSvg).join('');
     $('board').classList.toggle('radii-off', !showRadii);
     const count = Board.counts(state);
     $('wardCount').textContent = `Order ${count.Order}/10 · Chaos ${count.Chaos}/10`;
     const spec = Data.wardById(wardType);
     $('wardHint').textContent = spec ? `${spec.name}: 7.2m radius · drawn size estimated` : '';
+    if ($('removeGod')) $('removeGod').disabled = !selectedToken;
     $('undoBtn').disabled = !state.past.length;
     $('redoBtn').disabled = !state.future.length;
   }
@@ -153,13 +176,25 @@
       return;
     }
     if (ev.button !== 0) return;
-    const pin = ev.target.closest && ev.target.closest('[data-ward]');
+    const pin = ev.target.closest && ev.target.closest('[data-ward], [data-token]');
     const p = svgPoint(ev);
     if (pin && tool !== 'pen' && tool !== 'arrow' && tool !== 'eraser') {
-      drag = { id: pin.dataset.ward, startX: p.x, startY: p.y, ox: p.x, oy: p.y, moved: false };
-      const item = state.wards.find(w => w.id === drag.id);
+      const tokenId = pin.dataset.token;
+      drag = { id: tokenId || pin.dataset.ward, kind: tokenId ? 'token' : 'ward', startX: p.x, startY: p.y, ox: p.x, oy: p.y, moved: false };
+      const item = tokenId ? state.tokens.find(t => t.id === tokenId) : state.wards.find(w => w.id === drag.id);
       drag.originX = item.x;
       drag.originY = item.y;
+      if (tokenId) { selectedToken = tokenId; render(); }
+      if (ev.pointerId != null && board.setPointerCapture) {
+        try { board.setPointerCapture(ev.pointerId); } catch { /* already captured */ }
+      }
+      return;
+    }
+    if (tool === 'god') {
+      if (!armedGod) { toast('Choose a god first.'); return; }
+      selectedToken = Board.placeToken(state, { godId: armedGod, side: side, x: p.x, y: p.y });
+      play('place');
+      changed();
       return;
     }
     if (tool === 'ward') {
@@ -197,7 +232,7 @@
     if (!drag) return;
     const p = svgPoint(ev);
     if (drag.kind === 'eraser') { drag.points.push(p); return; }
-    const item = state.wards.find(w => w.id === drag.id);
+    const item = drag.kind === 'token' ? state.tokens.find(t => t.id === drag.id) : state.wards.find(w => w.id === drag.id);
     const dx = p.x - drag.ox;
     const dy = p.y - drag.oy;
     if (Math.hypot(p.x - drag.startX, p.y - drag.startY) > 3) drag.moved = true;
@@ -218,6 +253,16 @@
     if (!drag) return;
     if (drag.kind === 'eraser') {
       if (Board.erasePoints(state, drag.points, brush + 6)) changed();
+    } else if (drag.kind === 'token') {
+      if (drag.moved) {
+        const item = state.tokens.find(t => t.id === drag.id);
+        const x = item.x;
+        const y = item.y;
+        item.x = drag.originX;
+        item.y = drag.originY;
+        Board.moveToken(state, drag.id, x, y);
+        persist();
+      }
     } else if (drag.moved) {
       const item = state.wards.find(w => w.id === drag.id);
       const x = item.x;
@@ -264,7 +309,7 @@
     if (!btn) return;
     color = btn.dataset.color;
     $('colors').querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s === btn));
-    if (tool === 'ward' || tool === 'pan') setTool('pen');
+    if (tool === 'ward' || tool === 'god' || tool === 'pan') setTool('pen');
   };
   $('brush').addEventListener('input', () => { brush = Number($('brush').value); $('brushLabel').textContent = brush + 'px'; });
   $('showRadii').onchange = () => { showRadii = $('showRadii').checked; render(); };
@@ -282,7 +327,14 @@
   board.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.clientX, ev.clientY, ev.deltaY > 0 ? 1.12 : 0.89); }, { passive: false });
   board.addEventListener('contextmenu', ev => {
     ev.preventDefault();
+    const token = ev.target.closest && ev.target.closest('[data-token]');
     const pin = ev.target.closest && ev.target.closest('[data-ward]');
+    if (token) {
+      if (selectedToken === token.dataset.token) selectedToken = '';
+      Board.removeToken(state, token.dataset.token);
+      changed();
+      return;
+    }
     if (!pin) return;
     Board.removeWard(state, pin.dataset.ward);
     changed();
@@ -291,6 +343,13 @@
   window.addEventListener('pointerup', onUp);
   document.addEventListener('keydown', ev => {
     const meta = ev.metaKey || ev.ctrlKey;
+    const typing = ev.target && (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA');
+    if (!typing && (ev.key === 'Delete' || ev.key === 'Backspace') && selectedToken) {
+      ev.preventDefault();
+      Board.removeToken(state, selectedToken);
+      selectedToken = '';
+      changed();
+    }
     if (ev.key === 'Escape') $('about').hidden = true;
     if (meta && ev.key.toLowerCase() === 'z') { ev.preventDefault(); if (ev.shiftKey) Board.redo(state); else Board.undo(state); changed(); }
     if (meta && ev.key.toLowerCase() === 'y') { ev.preventDefault(); Board.redo(state); changed(); }
@@ -312,7 +371,7 @@
     for (const spec of Data.wards) icons[spec.id] = await loadImage(spec.icon);
     const clone = board.cloneNode(true);
     clone.querySelector('#mapImage')?.remove();
-    clone.querySelectorAll('.icon, .hit').forEach(node => node.remove());
+    clone.querySelectorAll('.icon, .hit, .token image').forEach(node => node.remove());
     if (!showRadii) clone.querySelectorAll('.radius').forEach(node => node.remove());
     clone.setAttribute('width', '1024');
     clone.setAttribute('height', '1024');
@@ -330,6 +389,10 @@
       const icon = icons[ward.type] || icons.vision;
       ctx.drawImage(icon, ward.x - size / 2, ward.y - size / 2, size, size);
     });
+    for (const token of state.tokens) {
+      const portrait = await loadImage('src/portraits/' + token.godId + '.webp');
+      ctx.drawImage(portrait, token.x - GOD_PX / 2, token.y - GOD_PX / 2, GOD_PX, GOD_PX);
+    }
     return canvas;
   }
   async function exportPng() {
@@ -352,6 +415,32 @@
     },
     undo: () => { const ok = Board.undo(state); if (ok) changed(); return ok; },
     counts: () => Board.counts(state),
+    placeToken: (godId, team, x, y) => {
+      selectedToken = Board.placeToken(state, { godId: godId, side: team, x: x, y: y });
+      changed();
+      return selectedToken;
+    },
     exportCanvas: exportCanvas
   };
+  $('godSearch').addEventListener('input', paintGods);
+  $('godList').onclick = ev => {
+    const btn = ev.target.closest('[data-god]');
+    if (!btn) return;
+    armedGod = btn.dataset.god;
+    setTool('god');
+    paintGods();
+  };
+  $('removeGod').onclick = () => {
+    if (!selectedToken) return;
+    Board.removeToken(state, selectedToken);
+    selectedToken = '';
+    changed();
+  };
+  if (typeof fetch === 'function') {
+    fetch('src/gods.json').then(r => r.json()).then(list => {
+      gods = Array.isArray(list) ? list : [];
+      paintGods();
+      render();
+    }).catch(() => {});
+  }
 })();

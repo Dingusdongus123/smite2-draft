@@ -32,6 +32,13 @@ label.check{display:flex;align-items:center;gap:8px;cursor:pointer}label.check i
 .ward .radius{fill:#3ec6ff22;stroke:#3ec6ff;stroke-width:2;pointer-events:none}.ward.chaos .radius{fill:#ff9a3c22;stroke:#ff9a3c}
 .ward .team-ring{fill:none;stroke:#3ec6ff;stroke-width:1.5;pointer-events:none}.ward.chaos .team-ring{stroke:#ff9a3c}
 .ward .icon{pointer-events:none}.ward .hit{fill:transparent}
+.token .halo{fill:none;stroke:#3ec6ff;stroke-width:1.5;pointer-events:none}.token.chaos .halo{stroke:#ff9a3c}
+.token .mark{fill:none;stroke:#ffe08a;stroke-width:2.5;opacity:0;pointer-events:none}.token.selected .mark{opacity:1}
+.godtray{display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;max-height:168px;overflow:auto;margin-top:6px}
+.godchip{width:54px;padding:3px;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:8px}
+.godchip img{width:36px;height:36px;object-fit:cover;border-radius:6px;display:block}
+.godchip span{font-size:9px;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.godchip.armed{border-color:#8ceeff99;color:var(--cyan)}
 .wardlist button{display:inline-flex;align-items:center;gap:6px}
 .wardlist img{width:26px;height:26px;display:block}
 svg.radii-off .radius{display:none}
@@ -66,6 +73,7 @@ svg.radii-off .radius{display:none}
     <h2>Draw</h2>
     <div class="tools">
       <button type="button" data-tool="ward" class="active">Ward</button>
+      <button type="button" data-tool="god">God</button>
       <button type="button" data-tool="pen">Pen</button>
       <button type="button" data-tool="arrow">Arrow</button>
       <button type="button" data-tool="eraser">Eraser</button>
@@ -83,13 +91,18 @@ svg.radii-off .radius{display:none}
       <button type="button" id="fitBtn">Fit map</button>
       <button type="button" id="exportBtn">Export PNG</button>
     </div>
-    <p class="muted" style="margin-top:10px">Wheel zooms. Drag a ward to move it. Click or right-click a ward to remove it. Ten wards per team.</p>
+    <h2>Gods</h2>
+    <input id="godSearch" placeholder="Search a god" aria-label="Search gods">
+    <div id="godList" class="godtray"></div>
+    <button type="button" id="removeGod" disabled>Remove god</button>
+    <p class="muted" style="margin-top:10px">Drag a god to move it. Click to select. Right-click or Delete removes it. Wards: click or right-click to remove. Ten wards per team.</p>
   </aside>
   <main class="stage">
     <svg id="board" viewBox="0 0 1024 1024" role="img" aria-label="SMITE 2 Conquest map">
       <image id="mapImage" href="src/assets/conquest.png" x="0" y="0" width="1024" height="1024"/>
       <g id="ink"></g>
       <g id="vision"></g>
+      <g id="tokens"></g>
     </svg>
     <p class="credit">Map image: <a href="https://smitesource.com/maps/conquest" target="_blank" rel="noopener">SmiteSource</a> · Ward icons: <a href="https://wiki.smite2.com/" target="_blank" rel="noopener">wiki.smite2.com</a></p>
   </main>
